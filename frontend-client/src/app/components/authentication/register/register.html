@@ -1,0 +1,55 @@
+<div class="register-container" style="max-width: 500px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+  <h2>Register New User Profile</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Full Name *</label>
+      <input type="text" formControlName="name" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Password *</label>
+      <input type="password" formControlName="password" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">System Role *</label>
+      <select formControlName="role" style="width:100%; padding:8px;">
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+        <option value="hr">HR Management</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Age (Optional)</label>
+      <input type="number" formControlName="age" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Telephone Number (Optional)</label>
+      <input type="text" formControlName="telephone_number" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">NIC Number (Optional)</label>
+      <input type="text" formControlName="nic_number" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Email (Optional)</label>
+      <input type="email" formControlName="email" style="width:100%; padding:8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label style="display:block;">Physical Address (Optional)</label>
+      <textarea formControlName="address" style="width:100%; padding:8px;"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid" style="padding: 10px 20px; background:#2B6CB0; color:white; border:none; cursor:pointer;">Register User</button>
+  </form>
+  
+  <div *ngIf="generatedCode" style="margin-top:20px; padding:15px; background:#EBF8FF; color:#2B6CB0; border:1px solid #BEE3F8; border-radius:4px;">
+    <strong>Registration Complete!</strong> The user's unique 6-character login code is: <b style="font-size:1.2em;">{{ generatedCode }}</b>
+  </div>
+</div>
