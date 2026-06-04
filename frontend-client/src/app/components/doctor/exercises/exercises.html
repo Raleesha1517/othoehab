@@ -1,0 +1,153 @@
+<div class="exercises-container">
+  
+  <header class="dashboard-header-block">
+    <div class="header-titles">
+      <h1>Exercise Library Management</h1>
+      <p class="subtitle">Create and manage exercises with media attachments</p>
+    </div>
+    <button class="action-btn-primary" (click)="openCreateModal()">
+      <span class="btn-icon">+</span> Create Exercise
+    </button>
+  </header>
+
+  <div class="control-filter-bar">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        placeholder="Search exercises by name or description..." 
+        [(ngModel)]="searchTerm"
+        (input)="filterExercises()"
+        class="form-field-input"
+      />
+    </div>
+    <div class="counter-badge">
+      Total: <strong>{{ filteredExercises.length }}</strong>
+    </div>
+  </div>
+
+  <div class="exercises-grid">
+    <div *ngFor="let exercise of filteredExercises" class="exercise-card">
+      <div class="card-header">
+        <h3>{{ exercise.name || exercise.title || 'Unnamed Exercise Profile' }}</h3>
+        <button class="btn-delete" (click)="deleteExercise(exercise.id)" title="Delete exercise">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <p class="description">{{ exercise.description || 'No descriptive logs entered for this entry node.' }}</p>
+      </div>
+
+      <div class="attachments-section">
+        <h4>Attachments ({{ exercise.attachments?.length || 0 }})</h4>
+        <div class="attachments-list">
+          <div *ngFor="let attachment of exercise.attachments" class="attachment-item">
+            <div class="attachment-info">
+              <span class="attachment-type" [ngClass]="'type-' + attachment.type">
+                {{ attachment.type | uppercase }}
+              </span>
+              <span class="attachment-title">{{ attachment.label }}</span> 
+            </div>
+            
+            <div class="attachment-actions-row">
+              <button class="btn-view-attachment" (click)="viewAttachment(attachment)" title="View Attachment File">
+                <i class="ti ti-eye"></i> View
+              </button>
+              <button class="btn-delete-small" (click)="deleteAttachment(attachment.id)" title="Delete attachment">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          </div>
+          <button class="btn-add-attachment" (click)="openAttachmentModal(exercise)">
+            <i class="ti ti-plus"></i> Add Attachment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredExercises.length === 0" class="empty-state">
+      <i class="ti ti-search"></i>
+      <p>No exercises found matching search terms.</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay-backdrop" *ngIf="showCreateModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>Create New Exercise Master</h3>
+        <button class="modal-close-x" (click)="closeCreateModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="createExercise()" class="modal-scroller-body">
+        <div class="input-form-control">
+          <label>Exercise Name *</label>
+          <input type="text" [(ngModel)]="newExerciseName" name="exercise_name" required class="form-field-input" placeholder="e.g., Lumbar Extension Protocol" />
+        </div>
+
+        <div class="input-form-control">
+          <label>Description</label>
+          <textarea [(ngModel)]="newExerciseDescription" name="exercise_description" class="form-field-input-area" placeholder="Enter objective prescription rules, reps structural layout metrics..."></textarea>
+        </div>
+
+        <div class="modal-footer-action-row">
+          <button type="button" class="btn-cancel-flat" (click)="closeCreateModal()">Cancel</button>
+          <button type="submit" class="action-btn-primary">Create Exercise</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay-backdrop" *ngIf="showAttachmentModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>Add Attachment to {{ selectedExercise?.name || selectedExercise?.title }}</h3>
+        <button class="modal-close-x" (click)="closeAttachmentModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="uploadAttachment()" class="modal-scroller-body">
+        <div class="input-form-control">
+          <label>Attachment Title *</label>
+          <input type="text" [(ngModel)]="attachmentTitle" name="attachment_title" required class="form-field-input" placeholder="e.g., Shoulder Rotation Guideline" />
+        </div>
+
+        <div class="input-form-control">
+          <label>Attachment Type *</label>
+          <select [(ngModel)]="attachmentType" name="attachment_type" required class="form-field-input">
+            <option value="pdf">PDF File</option>
+            <option value="youtube">YouTube Link</option>
+            <option value="drive">Google Drive Link</option>
+          </select>
+        </div>
+
+        <div *ngIf="attachmentType === 'pdf'" class="input-form-control">
+          <label>Select PDF File *</label>
+          <input type="file" (change)="onAttachmentFileSelected($event)" accept=".pdf" class="form-field-input" />
+        </div>
+
+        <div *ngIf="attachmentType !== 'pdf'" class="input-form-control">
+          <label>{{ attachmentType === 'youtube' ? 'YouTube URL Link' : 'Google Drive Workspace URL Link' }} *</label>
+          <input type="url" [(ngModel)]="attachmentUrl" name="attachment_url" required class="form-field-input" placeholder="https://..." />
+        </div>
+
+        <div class="modal-footer-action-row">
+          <button type="button" class="btn-cancel-flat" (click)="closeAttachmentModal()">Cancel</button>
+          <button type="submit" class="action-btn-primary">Add Attachment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay-backdrop sync-z-index" *ngIf="showPdfModal">
+    <div class="modal-surface-container pdf-viewer-layout-override">
+      <div class="modal-header-container">
+        <h3>Preview Medical Asset: {{ activePdfTitle }}</h3>
+        <button class="modal-close-x" (click)="closePdfModal()">&times;</button>
+      </div>
+      <div class="modal-scroller-body canvas-bleed-reset">
+        <iframe *ngIf="activePdfUrl" [src]="activePdfUrl" class="pdf-iframe-renderer" frameborder="0"></iframe>
+      </div>
+      <div class="modal-footer-action-row inline-padding-override">
+        <button type="button" class="action-btn-primary" (click)="closePdfModal()">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
+</div>

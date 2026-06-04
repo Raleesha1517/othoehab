@@ -1,0 +1,66 @@
+<p><div class="allocate-exercise-container">
+  
+  <header class="dashboard-header-block">
+    <button class="btn-back" (click)="goBack()">
+      <i class="ti ti-arrow-left"></i> Back to Patient
+    </button>
+    <div class="header-titles">
+      <h1>Allocate Exercises</h1>
+      <p class="subtitle">Assign exercises to this patient</p>
+    </div>
+  </header>
+
+  <div class="control-filter-bar">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        placeholder="Search exercises..." 
+        [(ngModel)]="searchTerm"
+        (input)="filterExercises()"
+        class="form-field-input"
+      />
+    </div>
+    <div class="counter-badge">
+      Selected: <strong>{{ selectedExercises.size }}</strong> / Available: <strong>{{ filteredExercises.length }}</strong>
+    </div>
+  </div>
+
+  <div class="exercises-grid">
+    <div *ngFor="let exercise of filteredExercises" 
+         class="exercise-card"
+         [ngClass]="{ selected: isExerciseSelected(exercise.id) }"
+         (click)="toggleExerciseSelection(exercise.id)">
+      <div class="card-header">
+        <input type="checkbox" 
+               [checked]="isExerciseSelected(exercise.id)"
+               (change)="toggleExerciseSelection(exercise.id); $event.stopPropagation()"
+               class="exercise-checkbox" />
+        <h4>{{ exercise.title }}</h4>
+      </div>
+
+      <div class="card-body">
+        <p class="description">{{ exercise.description || 'No description' }}</p>
+        <div class="attachments-count">
+          <i class="ti ti-paperclip"></i>
+          {{ exercise.attachments?.length || 0 }} attachment(s)
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredExercises.length === 0" class="empty-state">
+      <i class="ti ti-search"></i>
+      <p>No exercises found</p>
+    </div>
+  </div>
+
+  <div class="allocate-actions">
+    <button class="action-btn-secondary" (click)="goBack()">Cancel</button>
+    <button class="action-btn-primary" 
+            (click)="allocateExercises()"
+            [disabled]="isAllocating || selectedExercises.size === 0">
+      <i class="ti ti-check-circle"></i>
+      {{ isAllocating ? 'Allocating...' : `Allocate ${selectedExercises.size} Exercise(s)` }}
+    </button>
+  </div>
+
+</div>

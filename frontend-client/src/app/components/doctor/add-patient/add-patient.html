@@ -1,0 +1,78 @@
+<div class="form-workspace-wrapper">
+  
+  <header class="workspace-header">
+    <div class="back-link-row" (click)="cancelCreation()">
+      <span>← Return to Medical Workspace</span>
+    </div>
+    <h2>Initiate Standalone Clinical Profile</h2>
+    <p class="description-sub text-muted">Register a separate entry account node into the core environment network system database.</p>
+  </header>
+
+  <form [formGroup]="patientForm" (ngSubmit)="submitPatientForm()" class="clinical-form-surface shadow-sm">
+    
+    <div class="form-grid-row-double">
+      <div class="input-form-control">
+        <label>Legal Identity Name *</label>
+        <input type="text" formControlName="name" class="form-field-input" placeholder="Enter patient's full name" [ngClass]="{'field-invalid': patientForm.get('name')?.touched && patientForm.get('name')?.invalid}" />
+        <span class="error-msg-tag" *ngIf="patientForm.get('name')?.touched && patientForm.get('name')?.invalid">Valid identification name is required.</span>
+      </div>
+      
+      <div class="input-form-control">
+        <label>Classification Category *</label>
+        <select formControlName="category" class="form-field-input">
+          <option value="Surgery">Surgery</option>
+          <option value="Rehabilitation">Rehabilitation</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-form-control" *ngIf="patientForm.get('category')?.value === 'Other'">
+      <label>Specify Custom Category Classification Details *</label>
+      <textarea formControlName="other_category_detail" class="form-field-input-area" placeholder="Provide tracking descriptions tags..." [ngClass]="{'field-invalid': patientForm.get('other_category_detail')?.touched && patientForm.get('other_category_detail')?.invalid}"></textarea>
+      <span class="error-msg-tag" *ngIf="patientForm.get('other_category_detail')?.touched && patientForm.get('other_category_detail')?.invalid">Please describe the specific custom clinical classification.</span>
+    </div>
+
+    <div class="form-grid-row-triple">
+      <div class="input-form-control">
+        <label>Age (Years)</label>
+        <input type="number" formControlName="age" class="form-field-input" placeholder="e.g. 34" />
+      </div>
+      <div class="input-form-control">
+        <label>Contact Phone Number</label>
+        <input type="text" formControlName="phone" class="form-field-input" placeholder="e.g. +94771234567" />
+      </div>
+      <div class="input-form-control">
+        <label>National ID Card (NIC)</label>
+        <input type="text" formControlName="nic_number" class="form-field-input" placeholder="Enter identity number" />
+      </div>
+    </div>
+
+    <div class="input-form-control">
+      <label>Email Communication Endpoint Link</label>
+      <input type="email" formControlName="email" class="form-field-input" placeholder="patientname@domain.com" />
+    </div>
+
+    <div class="input-form-control secure-password-indicator-block">
+      <label>Auto-Generated Credentials Access Password</label>
+      <input type="text" readonly formControlName="patient_password" class="form-field-input password-lock-style" />
+      <p class="field-explanatory-note">This secure tracking alphanumeric array string is computed dynamically on loading state initialization cycles.</p>
+    </div>
+
+    <div class="input-form-control danger-zone-alert-box">
+      <label class="red-flag-label">🚩 Clinical Red Flags / Medical Contradictions</label>
+      <textarea formControlName="red_flags" class="form-field-input-area critical-red-flags" rows="3" placeholder="List any relevant allergies, spinal precautions, mechanical history or systemic vulnerabilities..."></textarea>
+    </div>
+
+    <div class="input-form-control">
+      <label>Initial Clinical Presentation Diagnosis Summary</label>
+      <textarea formControlName="description" class="form-field-input-area" rows="4" placeholder="Enter functional limitations, baseline objective range of motion parameters..."></textarea>
+    </div>
+
+    <div class="form-footer-action-row">
+      <button type="button" class="btn-cancel-flat" (click)="cancelCreation()">Cancel</button>
+      <button type="submit" class="action-btn-primary submit-btn-override">Commit Registration Profile</button>
+    </div>
+  </form>
+
+</div>

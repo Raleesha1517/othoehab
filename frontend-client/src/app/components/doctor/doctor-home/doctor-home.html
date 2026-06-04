@@ -1,1 +1,163 @@
-<p>doctor-home works!</p>
+<div class="doctor-dashboard-container">
+  
+  <header class="dashboard-header-block">
+    <div class="header-titles">
+      <h1>Practitioner Medical Workspace</h1>
+      <p class="subtitle">Orthopedic Rehabilitation Clinical Records Interface</p>
+    </div>
+    <button class="action-btn-primary" (click)="navigateToAddPatient()">
+  <span class="btn-icon">+</span> Initiate Patient File
+</button>
+  </header>
+
+  <div class="control-filter-bar">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        placeholder="Query by Name, Unique Tracking Code, or Identification Key..." 
+        [(ngModel)]="searchTerm"
+        (input)="filterPatients()"
+        class="form-field-input"
+      />
+    </div>
+    <div class="counter-badge">
+      Records Populated: <strong>{{ filteredPatients.length }}</strong>
+    </div>
+  </div>
+
+  <div class="table-scroller-viewport">
+    <table class="clinical-data-grid">
+      <thead>
+        <tr>
+          <th>System Identifier</th>
+          <th>Full Name</th>
+          <th>Category Classification</th>
+          <th>Communication Channel</th>
+          <th>Red Flags</th>
+          <th class="center-align-heading">System Interactions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of filteredPatients" class="grid-data-row">
+          <td><span class="badge-code">{{ patient.patient_code }}</span></td>
+          <td class="bold-text-emphasis">{{ patient.name }}</td>
+          <td>
+            <span class="badge-category" [ngClass]="patient.category?.toLowerCase()">
+              {{ patient.category }}
+            </span>
+          </td>
+          <td>{{ patient.phone ?? 'No record' }}</td>
+          <td>
+            <span *ngIf="patient.red_flags && patient.red_flags.length > 0" class="badge-red-flag">
+              🚩 {{ patient.red_flags.substring(0, 30) }}{{ patient.red_flags.length > 30 ? '...' : '' }}
+            </span>
+            <span *ngIf="!patient.red_flags || patient.red_flags.length === 0" class="text-muted-slate">
+              None
+            </span>
+          </td>
+          <td>
+            <div class="button-interaction-cluster">
+              <button class="action-row-btn view-btn" (click)="viewPatientDetails(patient.id)">View</button>
+              <button class="action-row-btn edit-btn" (click)="openEditModal(patient)">Edit</button>
+              <button class="action-row-btn delete-btn" (click)="deletePatientRecord(patient.id)">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngFor="let patient of filteredPatients" class="responsive-card-row">
+          <td colspan="6">
+            <div class="mobile-card-card">
+              <div class="card-mobile-header">
+                <span class="badge-code">{{ patient.patient_code }}</span>
+                <span class="badge-category" [ngClass]="patient.category?.toLowerCase()">{{ patient.category }}</span>
+              </div>
+              <h4 class="patient-card-title">{{ patient.name }}</h4>
+              <p class="patient-card-meta">Phone: {{ patient.phone ?? 'N/A' }}</p>
+              <div *ngIf="patient.red_flags && patient.red_flags.length > 0" class="card-red-flags">
+                <span class="badge-red-flag">🚩 {{ patient.red_flags }}</span>
+              </div>
+              <div class="card-mobile-footer">
+                <div class="button-interaction-cluster">
+                  <button class="action-row-btn view-btn" (click)="viewPatientDetails(patient.id)">View</button>
+                  <button class="action-row-btn edit-btn" (click)="openEditModal(patient)">Edit</button>
+                  <button class="action-row-btn delete-btn" (click)="deletePatientRecord(patient.id)">Delete</button>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredPatients.length === 0">
+          <td colspan="6" class="empty-placeholder-row">
+            No matching patient records exist inside this standalone environment database.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay-backdrop" *ngIf="showEditModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>Modify Case File: {{ selectedPatient.patient_code }}</h3>
+        <button class="modal-close-x" (click)="closeEditModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="submitUpdatePatient()" class="modal-scroller-body">
+        
+        <div class="form-grid-row-double">
+          <div class="input-form-control">
+            <label>Patient Full Name *</label>
+            <input type="text" [(ngModel)]="selectedPatient.name" name="edit_name" required class="form-field-input" />
+          </div>
+          <div class="input-form-control">
+            <label>Classification Category *</label>
+            <select [(ngModel)]="selectedPatient.category" name="edit_category" required class="form-field-input">
+              <option value="Surgery">Surgery</option>
+              <option value="Rehabilitation">Rehabilitation</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-form-control" *ngIf="selectedPatient.category === 'Other'">
+          <label>Specify Custom Category Details *</label>
+          <textarea [(ngModel)]="selectedPatient.other_category_detail" name="edit_other_category_detail" required class="form-field-input-area"></textarea>
+        </div>
+
+        <div class="form-grid-row-triple">
+          <div class="input-form-control">
+            <label>Age (Years)</label>
+            <input type="number" [(ngModel)]="selectedPatient.age" name="edit_age" class="form-field-input" />
+          </div>
+          <div class="input-form-control">
+            <label>Contact Phone</label>
+            <input type="text" [(ngModel)]="selectedPatient.phone" name="edit_phone" class="form-field-input" />
+          </div>
+          <div class="input-form-control">
+            <label>NIC Number Anchor</label>
+            <input type="text" [(ngModel)]="selectedPatient.nic_number" name="edit_nic" class="form-field-input" />
+          </div>
+        </div>
+
+        <div class="input-form-control">
+          <label>Email Link</label>
+          <input type="email" [(ngModel)]="selectedPatient.email" name="edit_email" class="form-field-input" />
+        </div>
+
+        <div class="input-form-control danger-zone-alert-box">
+          <label class="red-flag-label">🚩 Clinical Red Flags / Restrictions</label>
+          <textarea [(ngModel)]="selectedPatient.red_flags" name="edit_red_flags" class="form-field-input-area critical-red-flags"></textarea>
+        </div>
+
+        <div class="input-form-control">
+          <label>Clinical Description Summary</label>
+          <textarea [(ngModel)]="selectedPatient.description" name="edit_description" class="form-field-input-area" rows="3"></textarea>
+        </div>
+
+        <div class="modal-footer-action-row">
+          <button type="button" class="btn-cancel-flat" (click)="closeEditModal()">Discard Changes</button>
+          <button type="submit" class="action-btn-primary">Save Modifications</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

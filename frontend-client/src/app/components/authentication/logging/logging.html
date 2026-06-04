@@ -1,16 +1,69 @@
-<div class="login-container" style="max-width: 400px; margin: 60px auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 8px;">
-  <h2>System Authentication</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-    <div style="margin-bottom: 15px;">
-      <label style="display:block; margin-bottom:5px;">User Code or Email Address</label>
-      <input type="text" formControlName="login_identifier" placeholder="e.g. DR2814 or mail@domain.com" style="width:100%; padding:8px;" />
+<div class="login-scene">
+  <div class="login-card">
+
+    <div class="language-selector-tabs">
+      <button type="button" class="lang-tab" [class.active]="currentLang === 'en'" (click)="setLanguage('en')">English</button>
+      <button type="button" class="lang-tab" [class.active]="currentLang === 'si'" (click)="setLanguage('si')">සිංහල</button>
+      <button type="button" class="lang-tab" [class.active]="currentLang === 'ta'" (click)="setLanguage('ta')">தமிழ்</button>
     </div>
 
-    <div style="margin-bottom: 15px;">
-      <label style="display:block; margin-bottom:5px;">Security Password</label>
-      <input type="password" formControlName="password" style="width:100%; padding:8px;" />
+    <div class="card-header">
+      <div class="card-header-badge">
+        <div class="badge-dot"></div>
+        {{ translations[currentLang].securePortal }}
+      </div>
+      <h2>{{ translations[currentLang].title }}</h2>
+      <p>{{ translations[currentLang].subtitle }}</p>
     </div>
 
-    <button type="submit" [disabled]="loginForm.invalid" style="width:100%; padding:10px; background:#1A365D; color:white; border:none; cursor:pointer;">Sign In</button>
-  </form>
+    <div class="card-body">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+
+        <div class="field">
+          <label for="identifier">{{ translations[currentLang].identifierLabel }}</label>
+          <div class="input-wrap">
+            <i class="ti ti-id-badge input-icon" aria-hidden="true"></i>
+            <input
+              id="identifier"
+              type="text"
+              formControlName="login_identifier"
+              [placeholder]="translations[currentLang].identifierPlaceholder"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">{{ translations[currentLang].passwordLabel }}</label>
+          <div class="input-wrap">
+            <i class="ti ti-lock input-icon" aria-hidden="true"></i>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              [placeholder]="translations[currentLang].passwordPlaceholder"
+            />
+            <button
+              type="button"
+              class="eye-btn"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i [class]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="loginForm.invalid"
+        >
+          <i class="ti ti-shield-check" aria-hidden="true"></i>
+          {{ translations[currentLang].submitBtn }}
+        </button>
+
+      </form>
+    </div>
+
+  </div>
 </div>

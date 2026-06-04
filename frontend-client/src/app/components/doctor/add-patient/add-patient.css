@@ -1,0 +1,235 @@
+/* ==========================================================================
+   1. CORE WORKSPACE LAYER
+   ========================================================================== */
+.form-workspace-wrapper {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+.workspace-header {
+  margin-bottom: 2rem;
+}
+
+.back-link-row {
+  color: #005f73;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 1rem;
+  transition: color 0.15s ease;
+}
+
+.back-link-row:hover {
+  color: #004d5e;
+  text-decoration: underline;
+}
+
+.workspace-header h2 {
+  margin: 0 0 0.4rem 0;
+  color: #005f73;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.description-sub { 
+  margin: 0; 
+  font-size: 0.95rem; 
+  color: #64748b; 
+}
+
+/* ==========================================================================
+   2. FORM CONTAINER & GRID BLOCK LAYOUTS
+   ========================================================================== */
+.clinical-form-surface {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-grid-row-double {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.form-grid-row-triple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.input-form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-form-control label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ==========================================================================
+   3. FIELD INPUT INTERFACE FIELDS
+   ========================================================================== */
+.form-field-input,
+.form-field-input-area {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 0.95rem;
+  color: #2b2d42;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.form-field-input:focus,
+.form-field-input-area:focus {
+  outline: none;
+  border-color: #005f73;
+  box-shadow: 0 0 0 3px rgba(0, 95, 115, 0.15);
+}
+
+.form-field-input-area {
+  resize: vertical;
+}
+
+/* ==========================================================================
+   4. SPECIAL CONTEXT SUB-SYSTEMS (Password, Red Flags, Errors)
+   ========================================================================== */
+.password-lock-style {
+  background-color: #f1f5f9 !important;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 1px;
+}
+
+.field-explanatory-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.danger-zone-alert-box {
+  background-color: #fff5f5;
+  border: 1px dashed #ffebeb;
+  padding: 1.25rem;
+  border-radius: 6px;
+}
+
+.red-flag-label { 
+  color: #c53030 !important; 
+}
+
+.critical-red-flags:focus { 
+  border-color: #e53e3e !important; 
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15) !important; 
+}
+
+.field-invalid {
+  border-color: #e53e3e !important;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1) !important;
+}
+
+.error-msg-tag {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+/* ==========================================================================
+   5. ACTION CONTROL INTERACTION FOOTER ROW
+   ========================================================================== */
+.form-footer-action-row {
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel-flat {
+  background: none;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-cancel-flat:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.action-btn-primary {
+  background-color: #005f73;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 95, 115, 0.15);
+}
+
+.action-btn-primary:hover {
+  background-color: #004d5e;
+  box-shadow: 0 4px 12px rgba(0, 95, 115, 0.25);
+}
+
+.submit-btn-override {
+  padding: 0.85rem 2.5rem;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE DESIGN VIEWPORTS
+   ========================================================================== */
+@media (max-width: 768px) {
+  .form-grid-row-double, 
+  .form-grid-row-triple { 
+    grid-template-columns: 1fr; 
+    gap: 1.25rem; 
+  }
+}
+
+@media (max-width: 600px) {
+  .form-workspace-wrapper { 
+    padding: 1rem; 
+  }
+  .clinical-form-surface { 
+    padding: 1.25rem; 
+  }
+  .form-footer-action-row {
+    flex-direction: column-reverse;
+  }
+  .btn-cancel-flat,
+  .action-btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+}

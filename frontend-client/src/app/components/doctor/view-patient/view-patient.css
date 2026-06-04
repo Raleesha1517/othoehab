@@ -1,0 +1,794 @@
+/* ==========================================================================
+   Patient View Container & Structural Blocks
+   ========================================================================== */
+.patient-view-container {
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #2b2d42;
+}
+
+/* View Header Block minimized */
+.view-header-block {
+  margin-bottom: 1rem;
+  padding-bottom: 0rem;
+}
+
+.header-navigation {
+  margin-bottom: 1rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #0ea5e9;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+/* ==========================================================================
+   Detail Card & Slim Header Component Matrix
+   ========================================================================== */
+.patient-view-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.patient-detail-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Optimized compact banner profile layout */
+.card-header-section {
+  background: linear-gradient(135deg, #005f73 0%, #0a7ea4 100%);
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #00476b;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-identifiers {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.badge-code {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.patient-full-name {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #ffffff;
+  color: #005f73;
+}
+
+.edit-btn:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+/* Inline header warning node */
+.inline-red-flag {
+  background-color: #dc2626;
+  color: #ffffff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: flagPulse 2s infinite;
+}
+
+@keyframes flagPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Card Body Layout Configuration
+   ========================================================================== */
+.card-body-section {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.info-section {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 2rem;
+}
+
+.info-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #005f73;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Info Grid Layout Formats */
+.info-grid-row-one {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.info-grid-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.info-grid-row-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  color: #2b2d42;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Medical Categories & Red Flag Alert Interfaces
+   ========================================================================== */
+.badge-category {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  width: fit-content;
+}
+
+.badge-category.surgery { background-color: #fee2e2; color: #991b1b; }
+.badge-category.rehabilitation { background-color: #dcfce7; color: #166534; }
+.badge-category.medicine { background-color: #e0f2fe; color: #0369a1; }
+.badge-category.other { background-color: #fef9c3; color: #854d0e; }
+
+/* Clinical Red Flags Warning Panel */
+.red-flags-display {
+  background-color: #fee2e2;
+  border-left: 4px solid #dc2626;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.red-flags-display.critical-alert {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* ==========================================================================
+   Resource Infrastructure Blocks (Allocations, Records, Attachments)
+   ========================================================================== */
+.resource-section {
+  background-color: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+}
+
+.section-header-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header-with-action .section-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-allocate {
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.btn-allocate:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.resource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resource-item {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.resource-item:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.resource-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.resource-header h4 {
+  margin: 0;
+  color: #005f73;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.attachment-count,
+.category-badge {
+  background-color: #e2e8f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.category-badge {
+  background-color: #f1f5f9;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.resource-description {
+  margin: 0.5rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Interactive Attachments Matrix Nodes */
+.attachments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.attachment-item-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: #f0f9ff;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.attachment-item-mini.interactive-view-node {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.attachment-item-mini.interactive-view-node:hover {
+  background-color: #e0f2fe;
+  border-color: #bae6fd;
+}
+
+.view-indicator-icon {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-left: 0.25rem;
+}
+
+.attachment-item-mini.interactive-view-node:hover .view-indicator-icon {
+  color: #0284c7;
+}
+
+.att-type {
+  background-color: #dbeafe;
+  color: #0c4a6e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.att-type.type-pdf { background-color: #fee2e2; color: #991b1b; }
+.att-type.type-youtube { background-color: #fef3c7; color: #92400e; }
+.att-type.type-drive { background-color: #dbeafe; color: #0c4a6e; }
+
+.att-label {
+  color: #475569;
+  font-weight: 500;
+}
+
+.doc-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn-download-small,
+.btn-delete-small {
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.btn-download-small:hover { color: #0284c7; }
+.btn-delete-small { color: #ef4444; }
+.btn-delete-small:hover { color: #dc2626; }
+
+.empty-resource {
+  text-align: center;
+  padding: 1.5rem;
+  color: #94a3b8;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e1;
+}
+
+.empty-resource p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Footer Component Actions
+   ========================================================================== */
+.card-footer-section {
+  background-color: #f8fafc;
+  padding: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #005f73;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #004d5e;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* ==========================================================================
+   Document Frames & Overlay Modal Layout Engine
+   ========================================================================== */
+.modal-overlay-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.modal-overlay-backdrop.sync-z-index {
+  z-index: 9999;
+}
+
+.modal-surface-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-surface-container.pdf-viewer-layout-override {
+  max-width: 950px;
+  height: 85vh;
+}
+
+.modal-header-container {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8fafc;
+}
+
+.modal-header-container h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #005f73;
+  font-weight: 700;
+}
+
+.modal-close-x {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0.25rem;
+  transition: color 0.15s;
+}
+
+.modal-close-x:hover {
+  color: #475569;
+}
+
+.modal-scroller-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-scroller-body.canvas-bleed-reset {
+  padding: 0;
+  background-color: #525659;
+  display: flex;
+}
+
+.pdf-iframe-renderer {
+  width: 100%;
+  height: 100%;
+  border: none;
+  flex: 1;
+}
+
+.modal-footer-action-row {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #f8fafc;
+  gap: 0.75rem;
+}
+
+.modal-footer-action-row.inline-padding-override {
+  padding: 1rem 1.5rem;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ==========================================================================
+   Loading and System Error States
+   ========================================================================== */
+.loading-container,
+.error-container {
+  padding: 3rem;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   Responsive Viewport Adaptability Media Rules
+   ========================================================================== */
+@media (max-width: 768px) {
+  .patient-view-container {
+    padding: 1rem;
+  }
+
+  .card-header-section {
+    padding: 1.25rem 1rem;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .patient-full-name {
+    font-size: 1.25rem;
+  }
+
+  .info-grid-row-two {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid-row-three {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card-footer-section {
+    flex-direction: column-reverse;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .modal-overlay-backdrop {
+    padding: 1rem;
+  }
+  
+  .modal-surface-container.pdf-viewer-layout-override {
+    height: 90vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-view-container {
+    padding: 0.75rem;
+  }
+
+  .info-grid-row-three {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* ==========================================================================
+   Visibility Toggle Switches and Hidden Item Aesthetics Override Matrix
+   ========================================================================== */
+.title-with-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.visibility-toggle-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8fafc;
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.toggle-status-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 48px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+/* Base switch layout setup container */
+.switch-toggle-node {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+/* Hide native default checkbox graphics */
+.switch-toggle-node input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom CSS styled slider canvas tracking row base */
+.slider-toggle-round {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1;
+  transition: .25s ease-in-out;
+  border-radius: 34px;
+}
+
+.slider-toggle-round:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .25s ease-in-out;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+input:checked + .slider-toggle-round {
+  background-color: #10b981;
+}
+
+input:focus + .slider-toggle-round {
+  box-shadow: 0 0 1px #10b981;
+}
+
+input:checked + .slider-toggle-round:before {
+  transform: translateX(16px);
+}
+
+/* Modifiers applied smoothly directly to minimized structural item rows */
+.resource-item.item-hidden {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+  opacity: 0.85;
+}
+
+.toggleable-resource-content {
+  animation: slideDownToggle .2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes slideDownToggle {
+  from { opacity: 0; transform: translateY(-4px); max-height: 0; }
+  to { opacity: 1; transform: translateY(0); max-height: 500px; }
+}
+
+@media (max-width: 580px) {
+  .resource-header {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem;
+  }
+}
+

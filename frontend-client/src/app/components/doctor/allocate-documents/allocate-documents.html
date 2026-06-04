@@ -1,0 +1,107 @@
+<div class="allocate-template-container">
+  
+  <header class="dashboard-header-block">
+    <button class="btn-back" (click)="goBack()">
+      <i class="ti ti-arrow-left"></i> Back to Patient
+    </button>
+    <div class="header-titles">
+      <h1>Patient Documents Dashboard</h1>
+      <p class="subtitle">Manage health reports, scans, and diagnostic logs for this patient profile</p>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <section class="allocate-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="margin: 0;">Existing Medical Records</h2>
+        <button class="action-btn-secondary" (click)="openDocumentUploadModal()" style="margin: 0;">
+          <i class="ti ti-upload"></i> Upload New Document
+        </button>
+      </div>
+
+      <div class="control-filter-bar">
+        <div class="search-input-wrapper">
+          <input 
+            type="text" 
+            placeholder="Search documents by category or description..." 
+            [(ngModel)]="searchQuery"
+            (input)="filterPatientDocuments()"
+            class="form-field-input"
+          />
+        </div>
+        <div class="counter-badge">
+          Active Records: <strong>{{ filteredDocuments.length }}</strong>
+        </div>
+      </div>
+
+      <div class="table-scroller-node" *ngIf="filteredDocuments.length > 0">
+        <table class="workspace-data-table" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f1f5f9; text-align:left;">
+              <th style="padding:10px;">File Name</th>
+              <th style="padding:10px;">Category</th>
+              <th style="padding:10px;">Description</th>
+              <th style="padding:10px; text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of filteredDocuments" style="border-bottom:1px solid #e2e8f0;">
+              <td style="padding:12px; font-weight:600; color:#0f172a;">{{ doc.name || 'Medical Document Asset' }}</td>
+              <td style="padding:12px;"><span class="counter-badge" style="background:#eef2ff; color:#4f46e5; padding: 2px 8px; border-radius: 9999px;">{{ doc.category }}</span></td>
+              <td style="padding:12px; color:#475569; font-size:0.9rem;">{{ doc.description || 'No descriptive context provided.' }}</td>
+              <td style="padding:12px; text-align:center; display: flex; justify-content: center; gap: 8px; align-items: center;">
+                <button class="btn-download" (click)="downloadPatientFile(doc)" style="display:inline-flex; border:1px solid #cbd5e1; padding:6px 12px; border-radius:4px; background:#fff; font-size:0.85rem; align-items:center; gap:6px; cursor:pointer; color:#334155;">
+                  <i class="ti ti-download"></i> Get File
+                </button>
+                <button (click)="deletePatientFile(doc)" style="display:inline-flex; border:1px solid #fee2e2; padding:6px 12px; border-radius:4px; background:#fef2f2; font-size:0.85rem; align-items:center; gap:6px; cursor:pointer; color:#ef4444;">
+                  <i class="ti ti-trash"></i> Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="filteredDocuments.length === 0" class="empty-state" style="padding: 2.5rem 1rem;">
+        <i class="ti ti-folder-off"></i>
+        <p>No historical medical records available for this patient context.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay-backdrop" *ngIf="showDocumentUploadModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>Upload Patient Document</h3>
+        <button class="modal-close-x" (click)="closeDocumentUploadModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="uploadDocument()" class="modal-scroller-body">
+        <div class="input-form-control">
+          <label>Document Category *</label>
+          <select [(ngModel)]="documentCategory" name="category" required class="form-field-input">
+            <option value="">Select category...</option>
+            <option *ngFor="let cat of documentCategories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+
+        <div class="input-form-control">
+          <label>Select Document File *</label>
+          <input type="file" (change)="onDocumentFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="form-field-input" required />
+        </div>
+
+        <div class="input-form-control">
+          <label>Description (Optional)</label>
+          <textarea [(ngModel)]="documentDescription" name="description" class="form-field-input-area" placeholder="Add tracking parameters or clinical notes about this file..."></textarea>
+        </div>
+
+        <div class="modal-footer-action-row">
+          <button type="button" class="btn-cancel-flat" (click)="closeDocumentUploadModal()">Cancel</button>
+          <button type="submit" class="action-btn-primary" [disabled]="isUploadingDocument">
+            {{ isUploadingDocument ? 'Uploading Asset...' : 'Upload Document' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

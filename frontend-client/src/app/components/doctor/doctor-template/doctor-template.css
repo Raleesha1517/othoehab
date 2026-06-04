@@ -1,0 +1,415 @@
+.template-workspace-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #2b2d42;
+}
+
+.workspace-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1.5rem;
+}
+
+.workspace-header h1 {
+  font-size: 1.85rem;
+  color: #005f73;
+  margin: 0 0 0.25rem 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.workspace-header .subtitle {
+  color: #6c757d;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Master Grid Partition Alignment Setup */
+.workspace-grid-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.workspace-card {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.card-title-node {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #005f73;
+  margin: 0 0 1.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+}
+
+/* Input Form Engineering Styles Matrix */
+.workspace-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-form-control label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-field-input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  transition: border-color 0.15s ease;
+}
+
+.form-field-input:focus {
+  outline: none;
+  border-color: #0a7ea4;
+}
+
+.form-field-input-area {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-field-input-area:focus {
+  outline: none;
+  border-color: #0a7ea4;
+}
+
+.file-upload-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.btn-select-file {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-select-file:hover {
+  background: #f0f9ff;
+  border-color: #0ea5e9;
+  color: #0369a1;
+}
+
+.action-btn-primary {
+  background-color: #005f73;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.action-btn-primary:hover {
+  background-color: #004d5e;
+}
+
+.action-btn-primary:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Repository Managed Datatables Matrix Core UI */
+.table-scroller-node {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.workspace-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.workspace-data-table th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.workspace-data-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.bold-title-cell {
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.bold-title-cell i {
+  font-size: 1.2rem;
+}
+
+.description-text-cell {
+  color: #475569;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.center-align {
+  text-align: center;
+}
+
+.action-flex-wrapper {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.btn-table-action {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 1rem;
+}
+
+.btn-table-action.download { color: #0ea5e9; }
+.btn-table-action.download:hover { background: #f0f9ff; border-color: #0ea5e9; }
+
+.btn-table-action.delete { color: #ef4444; }
+.btn-table-action.delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+/* Empty Database Record Layout Components */
+.empty-workspace-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.empty-workspace-state .main-msg {
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+}
+
+.empty-workspace-state .sub-msg {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.workspace-loading-shimmer {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.text-danger { color: #dc2626; }
+.text-primary { color: #2563eb; }
+.text-secondary { color: #64748b; }
+
+/* Responsive Grid Adaptation Nodes */
+@media (max-width: 1024px) {
+  .workspace-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.template-workspace-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.workspace-header h1 {
+  font-size: 1.75rem;
+  color: #005f73;
+  margin: 0;
+}
+
+.workspace-header .subtitle {
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Cleaner Action Toolbar Formatting Setup */
+.workspace-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1.15rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.65rem 0.65rem 0.65rem 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #005f73;
+}
+
+/* Buttons in Table Row Adjustments */
+.btn-table-action {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s;
+}
+
+.btn-table-action.download { color: #0ea5e9; }
+.btn-table-action.download:hover { background: #f0f9ff; border-color: #0ea5e9; }
+
+.btn-table-action.exercises { color: #16a34a; }
+.btn-table-action.exercises:hover { background: #f0fdf4; border-color: #16a34a; }
+
+.btn-table-action.delete { color: #ef4444; }
+.btn-table-action.delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+.action-flex-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Button Action Classes Inside Grid Row Table Blocks */
+.btn-table-action.view {
+  color: #005f73;
+}
+.btn-table-action.view:hover {
+  background: #e0f2f1;
+  border-color: #005f73;
+}
+
+/* Modal text input box layout tweaks for multi-field parameters setup */
+.swal2-input, .swal2-textarea {
+  font-family: inherit;
+  font-size: 0.9rem !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+}
+.swal2-input:focus, .swal2-textarea:focus {
+  border-color: #005f73 !important;
+  box-shadow: 0 0 0 2px rgba(0, 95, 115, 0.2) !important;
+}
+
+/* Local Development Preview Fallback Card Styles */
+.local-preview-notice {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 1.25rem;
+  text-align: left;
+  margin-top: 10px;
+}
+
+.local-preview-notice p {
+  margin: 0 0 0.75rem 0;
+  color: #334155;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.local-preview-notice .sub-alert {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.local-preview-notice code {
+  background-color: #e2e8f0;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  color: #0f172a;
+  font-family: monospace;
+}

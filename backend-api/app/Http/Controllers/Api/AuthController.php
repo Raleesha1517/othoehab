@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -44,29 +45,68 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'login_identifier' => 'required|string',
-            'password' => 'required|string'
-        ]);
+{
+    $request->validate([
+        'login_identifier' => 'required|string',
+        'password' => 'required|string'
+    ]);
 
-        $fieldType = filter_var($request->login_identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'user_code';
-        $user = User::where($fieldType, $request->login_identifier)->first();
+    $identifier = $request->login_identifier;
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid structural login combination or password mismatch.'], 401);
+    // 1. Check if identifier is an email address (Always maps to User table)
+    if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+        $user = User::where('email', $identifier)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            return $this->generateUserResponse($user);
         }
+    } else {
+        // 2. Check User Table by user_code OR name
+        $user = User::where('user_code', $identifier)
+                    ->orWhere('name', $identifier)
+                    ->first();
+                    
+        if ($user && Hash::check($request->password, $user->password)) {
+            return $this->generateUserResponse($user);
+        }
+    }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    // 3. Check Patient Table by patient_code OR name
+    $patient = Patient::where('patient_code', $identifier)
+                      ->orWhere('name', $identifier)
+                      ->first();
 
+    if ($patient && Hash::check($request->password, $patient->patient_password)) {
+        $token = $patient->createToken('auth_token')->plainTextToken;
+        
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'role' => $user->role,
-            'user_code' => $user->user_code,
-            'name' => $user->name
+            'role' => 'patient',
+            'user_code' => $patient->patient_code,
+            'name' => $patient->name,
+            'type' => 'patient',
+            'patient_id' => $patient->id
         ], 200);
     }
+
+    return response()->json(['message' => 'Invalid authentication credentials or password mismatch.'], 401);
+}
+
+/**
+ * Helper to generate standardized JSON payload for Admin, Doctor, and HR users
+ */
+private function generateUserResponse($user)
+{
+    $token = $user->createToken('auth_token')->plainTextToken;
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'role' => strtolower($user->role),
+        'user_code' => $user->user_code,
+        'name' => $user->name,
+        'type' => 'user'
+    ], 200);
+}
 
     public function user(Request $request)
     {

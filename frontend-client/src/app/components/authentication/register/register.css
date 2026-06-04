@@ -1,0 +1,84 @@
+.register-container {
+  background: #ffffff;
+  max-width: 540px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  padding: 32px !important;
+  margin: 40px auto !important;
+}
+
+.register-container h2 {
+  margin: 0 0 8px 0;
+  color: #1a365d;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.register-container form div {
+  margin-bottom: 16px !important;
+}
+
+.register-container label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #4a5568;
+  margin-bottom: 6px;
+}
+
+.register-container input[type="text"],
+.register-container input[type="password"],
+.register-container input[type="number"],
+.register-container input[type="email"],
+.register-container select,
+.register-container textarea {
+  width: 100%;
+  padding: 10px 14px !important;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.register-container input:focus,
+.register-container select:focus,
+.register-container textarea:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+}
+
+.register-container textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.register-container button[type="submit"] {
+  width: 100%;
+  padding: 12px !important;
+  background-color: #2b6cb0 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.18s ease; /* Shared primary-button dynamics */
+  margin-top: 12px;
+}
+
+.register-container button[type="submit"]:hover:not(:disabled) {
+  background-color: #2c5282 !important;
+  transform: translateY(-1px);
+}
+
+.register-container button[type="submit"]:disabled {
+  background-color: #cbd5e0 !important;
+  cursor: not-allowed;
+  transform: none;
+}

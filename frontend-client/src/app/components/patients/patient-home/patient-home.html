@@ -1,1 +1,160 @@
-<p>patient-home works!</p>
+<div class="patient-dashboard-container">
+  
+  <header class="dashboard-header-block">
+    <div class="header-titles">
+      <p class="subtitle">Health Records & Information — Dr. Melanie Amarasooriya</p>
+    </div>
+    
+    <div class="header-navigation-actions" *ngIf="!isLoading && patientDetails">
+      <button class="nav-jump-btn border-exercises" (click)="scrollToSection('exercises-section')">
+        <i class="ti ti-stretching"></i> Exercises
+      </button>
+      <button class="nav-jump-btn border-records" (click)="scrollToSection('records-section')">
+        <i class="ti ti-files"></i> Health Records
+      </button>
+      <button class="nav-jump-btn border-letters" (click)="scrollToSection('letters-section')">
+        <i class="ti ti-file-description"></i> Medical Letters
+      </button>
+    </div>
+  </header>
+
+  <div class="patient-content-wrapper" *ngIf="!isLoading && patientDetails; else loadingState">
+    
+    <div class="patient-profile-card">
+      <div class="card-header-section">
+        <div class="profile-identifier">
+          <span class="badge-code">{{ patientDetails.patient_code }}</span>
+          <h2 class="patient-full-name">{{ patientDetails.name }}</h2>
+        </div>
+      </div>
+
+      <div class="card-body-section">
+        <div class="info-grid-row-three">
+          <div class="info-item">
+            <label class="info-label">Age</label>
+            <p class="info-value">{{ patientDetails.age ?? 'N/A' }} years</p>
+          </div>
+          <div class="info-item">
+            <label class="info-label">Contact Number</label>
+            <p class="info-value">{{ patientDetails.phone ?? 'Not provided' }}</p>
+          </div>
+          <div class="info-item">
+            <label class="info-label">Classification Category</label>
+            <p class="info-value">
+              <span class="badge-category" [ngClass]="patientDetails.category?.toLowerCase()">
+                {{ patientDetails.category }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="patient-resources-layout">
+
+      <section id="exercises-section" class="info-section resource-section">
+        <div class="section-header-with-action">
+          <h4 class="section-title-small"><i class="ti ti-stretching"></i> Allocated Exercises</h4>
+        </div>
+
+        <div class="dashboard-instruction-banner">
+          <div class="ins-icon-wrapper">
+            <i class="ti ti-info-circle"></i>
+          </div>
+          <div class="ins-text-content">
+            <strong>How to access your resources:</strong> 
+            Use your exercises by clicking directly on them in the exercise section. For your health records or official letters, click the download or view buttons.
+          </div>
+        </div>
+        
+        <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
+          <ng-container *ngFor="let exercise of exercises">
+            <div *ngIf="exercise.is_visible" class="resource-item">
+              <div class="resource-header">
+                <h5>{{ exercise.title || exercise.name }}</h5>
+                <span class="attachment-count">{{ exercise.attachments?.length || 0 }} files</span>
+              </div>
+              <p class="resource-description">{{ exercise.description || 'No description assigned.' }}</p>
+              
+              <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
+                <div *ngFor="let att of exercise.attachments" class="attachment-item-mini" (click)="viewAttachment(att)">
+                  <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
+                  <span class="att-label">{{ att.label || att.title }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        
+        <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
+          <p>No exercises allocated yet.</p>
+        </div>
+      </section>
+
+      <section id="records-section" class="info-section resource-section health-records-border">
+        <div class="section-header-with-action">
+          <h4 class="section-title-small"><i class="ti ti-files"></i> My Health Records</h4>
+        </div>
+        
+        <div *ngIf="!resourcesLoading && medicalRecords.length > 0" class="resource-list">
+          <ng-container *ngFor="let doc of medicalRecords">
+            <div *ngIf="doc.isVisible" class="resource-item">
+              <div class="resource-header">
+                <h5>{{ doc.original_filename || doc.name }}</h5>
+                <span class="category-badge">{{ doc.category }}</span>
+              </div>
+              <p class="resource-description">{{ doc.description || 'General health document.' }}</p>
+              <div class="doc-actions">
+                <button class="btn-download-small" (click)="downloadDocument(doc.id, doc.original_filename || doc.name)">
+                  <i class="ti ti-download"></i> Download Record
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </section>
+
+      <section id="letters-section" class="info-section resource-section medical-letters-border">
+        <div class="section-header-with-action">
+          <h4 class="section-title-small"><i class="ti ti-file-description"></i> Official Medical Letters</h4>
+        </div>
+        
+        <div *ngIf="!resourcesLoading && medicalLetters.length > 0" class="resource-list">
+          <ng-container *ngFor="let templateDoc of medicalLetters">
+            <div *ngIf="templateDoc.isVisible" class="resource-item">
+              <div class="resource-header">
+                <h5>{{ templateDoc.original_filename || templateDoc.name }}</h5>
+                <span class="category-badge letter-badge-color">Template</span>
+              </div>
+              <div class="doc-actions">
+                <button class="btn-download-small letter-text-color" (click)="downloadDocument(templateDoc.id, templateDoc.original_filename || templateDoc.name)">
+                  <i class="ti ti-download"></i> View Document
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-container">
+      <p>Fetching your health profile...</p>
+    </div>
+  </ng-template>
+
+  <div class="modal-overlay-backdrop" *ngIf="showPdfModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>{{ activePdfTitle }}</h3>
+        <button class="modal-close-x" (click)="closePdfModal()">&times;</button>
+      </div>
+      <div class="modal-scroller-body">
+        <iframe *ngIf="activePdfUrl" [src]="activePdfUrl" class="pdf-iframe-renderer"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+

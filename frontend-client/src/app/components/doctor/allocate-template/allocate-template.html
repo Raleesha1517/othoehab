@@ -1,0 +1,156 @@
+<div class="allocate-template-container">
+  
+  <header class="dashboard-header-block">
+    <button class="btn-back" (click)="goBack()">
+      <i class="ti ti-arrow-left"></i> Back to Patient
+    </button>
+    <div class="header-titles">
+      <h1>Allocate Medical Letters</h1>
+      <p class="subtitle">Assign evaluation frameworks and medical letter files for this patient</p>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    <section class="allocate-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="margin: 0;">Allocated Medical Letters for this Patient</h2>
+        <button class="action-btn-secondary" (click)="openTemplateUploadModal()" style="margin: 0;">
+          <i class="ti ti-upload"></i> Upload Medical Letter File for Patient
+        </button>
+      </div>
+
+      <div class="control-filter-bar">
+        <div class="search-input-wrapper">
+          <input 
+            type="text" 
+            placeholder="Search allocated patient records by title or description..." 
+            [(ngModel)]="documentSearchQuery"
+            (input)="filterPatientDocuments()"
+            class="form-field-input"
+          />
+        </div>
+        <div class="counter-badge">
+          Total Assigned: <strong>{{ filteredDocuments.length }}</strong>
+        </div>
+      </div>
+
+      <div class="table-scroller-node" *ngIf="filteredDocuments.length > 0" style="overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <table class="workspace-data-table" style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc; text-align:left; border-bottom: 2px solid #e2e8f0;">
+              <th style="padding:12px 16px; color:#475569; font-weight:600;">Document Name</th>
+              <th style="padding:12px 16px; color:#475569; font-weight:600;">Tracking Notes / Context</th>
+              <th style="padding:12px 16px; color:#475569; font-weight:600; text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of filteredDocuments" style="border-bottom:1px solid #e2e8f0;">
+              <td style="padding:14px 16px; font-weight:600; color:#0f172a;">{{ doc.name || 'Clinical Medical Letter Record' }}</td>
+              <td style="padding:14px 16px; color:#64748b; font-size:0.9rem;">{{ doc.description || 'No contextual track description provided.' }}</td>
+              <td style="padding:14px 16px; text-align:center; display: flex; justify-content: center; gap: 8px; align-items: center;">
+                <button class="btn-download" (click)="downloadPatientFile(doc)" style="display:inline-flex; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; background:#fff; font-size:0.85rem; align-items:center; gap:6px; cursor:pointer; color:#334155;">
+                  <i class="ti ti-download"></i> Get File
+                </button>
+                <button (click)="deletePatientFile(doc)" style="display:inline-flex; border:1px solid #fee2e2; padding:6px 12px; border-radius:6px; background:#fef2f2; font-size:0.85rem; align-items:center; gap:6px; cursor:pointer; color:#ef4444;">
+                  <i class="ti ti-trash"></i> Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="filteredDocuments.length === 0" class="empty-state" style="padding: 2.5rem 1rem;">
+        <i class="ti ti-folder-off"></i>
+        <p>No active historical medical letter documents committed to this patient profile yet.</p>
+      </div>
+    </section>
+
+    <section class="allocate-section" style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px dashed #cbd5e1;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="margin:0;">Available Master Medical Letters</h2>
+      </div>
+      
+      <div class="control-filter-bar">
+        <div class="search-input-wrapper">
+          <input 
+            type="text" 
+            placeholder="Search medical letters by name or description..." 
+            [(ngModel)]="searchTerm"
+            (input)="filterTemplates()"
+            class="form-field-input"
+          />
+        </div>
+        <div class="counter-badge">
+          Count: <strong>{{ filteredTemplates.length }}</strong>
+        </div>
+      </div>
+
+      <div class="templates-grid">
+        <div *ngFor="let template of filteredTemplates" 
+             class="template-card"
+             [ngClass]="{ selected: selectedTemplate?.id === template.id }"
+             (click)="selectTemplate(template)">
+          <div class="card-inner">
+            <i class="ti ti-file-description"></i>
+            <h4>{{ template.name || template.title }}</h4>
+            <p>{{ template.description || 'No contextual description provided.' }}</p>
+            <div class="card-footer">
+              <button class="btn-download" (click)="downloadTemplate(template.id, template.name || template.title); $event.stopPropagation()">
+                <i class="ti ti-download"></i> Download
+              </button>
+              <span class="check-mark" *ngIf="selectedTemplate?.id === template.id">
+                <i class="ti ti-check"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="filteredTemplates.length === 0" class="empty-state">
+          <i class="ti ti-search"></i>
+          <p>No medical letters found matching criteria.</p>
+        </div>
+      </div>
+
+      <div *ngIf="selectedTemplate" class="allocate-actions">
+        <button class="action-btn-primary" (click)="allocateTemplate()" [disabled]="isAllocating">
+          <i class="ti ti-check-circle"></i>
+          {{ isAllocating ? 'Allocating Medical Letter Structure...' : 'Allocate Selected Medical Letter to Patient' }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay-backdrop" *ngIf="showTemplateUploadModal">
+    <div class="modal-surface-container">
+      <div class="modal-header-container">
+        <h3>Upload Medical Letter Document to Patient Records</h3>
+        <button class="modal-close-x" (click)="closeTemplateUploadModal()">&times;</button>
+      </div>
+      <form (ngSubmit)="uploadTemplateFile()" class="modal-scroller-body">
+        <div class="input-form-control">
+          <label>Document Title / Name *</label>
+          <input type="text" [(ngModel)]="uploadName" name="uploadName" required class="form-field-input" placeholder="e.g., Assigned Knee Assessment Sheet" />
+        </div>
+
+        <div class="input-form-control">
+          <label>Select Document File * (.pdf, .doc, .docx)</label>
+          <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" class="form-field-input" required />
+        </div>
+
+        <div class="input-form-control">
+          <label>Description / Track Notes</label>
+          <textarea [(ngModel)]="uploadDescription" name="uploadDescription" class="form-field-input-area" placeholder="Provide notes..."></textarea>
+        </div>
+
+        <div class="modal-footer-action-row">
+          <button type="button" class="btn-cancel-flat" (click)="closeTemplateUploadModal()">Cancel</button>
+          <button type="submit" class="action-btn-primary" [disabled]="isUploading">
+            {{ isUploading ? 'Uploading to Patient...' : 'Commit Document File' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

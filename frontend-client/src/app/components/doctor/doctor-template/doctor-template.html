@@ -1,0 +1,69 @@
+<div class="template-workspace-container">
+  
+  <header class="workspace-header">
+    <h1>Clinical Templates</h1>
+    <p class="subtitle">Manage and preview master evaluation skeleton files (.pdf, .doc, .docx).</p>
+  </header>
+
+  <div class="workspace-action-bar">
+    <div class="search-wrapper">
+      <i class="ti ti-search search-icon"></i>
+      <input type="text" [(ngModel)]="searchQuery" (input)="filterTemplates()" 
+             placeholder="Search templates by title or description..." class="search-input" />
+    </div>
+    
+    <button type="button" class="action-btn-primary" (click)="fileInputWorkspace.click()">
+      <i class="ti ti-cloud-upload"></i> Upload New Template
+    </button>
+    <input type="file" #fileInputWorkspace (change)="onWorkspaceFileSelected($event)" accept=".pdf,.doc,.docx" style="display: none;" />
+  </div>
+
+  <div class="workspace-card">
+    <div class="table-scroller-node" *ngIf="!isLoading && filteredCollection.length > 0">
+      <table class="workspace-data-table">
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Description</th>
+            <th class="center-align">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredCollection">
+            <td class="bold-title-cell">
+              <i class="ti" [ngClass]="getFileIconClass(item.name || item.title)"></i>
+              {{ item.name || item.title }}
+            </td>
+            <td class="description-text-cell">
+              {{ item.description || 'No description provided.' }}
+            </td>
+            <td class="actions-cell center-align">
+              <div class="action-flex-wrapper">
+                <button type="button" class="btn-table-action view" (click)="viewActiveTemplate(item)" title="View Template File">
+                  <i class="ti ti-eye"></i> View
+                </button>
+
+                <button type="button" class="btn-table-action download" (click)="downloadActiveTemplate(item.id, item.name || item.title)" title="Download Blank File">
+                  <i class="ti ti-download"></i> Download
+                </button>
+                
+                <button type="button" class="btn-table-action delete" (click)="deleteActiveTemplate(item.id)" title="Delete Template Layout">
+                  <i class="ti ti-trash"></i> Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-workspace-state" *ngIf="!isLoading && filteredCollection.length === 0">
+      <i class="ti ti-folder-off placeholder-icon"></i>
+      <p class="main-msg">No clinical documents match your search criteria.</p>
+    </div>
+
+    <div class="workspace-loading-shimmer" *ngIf="isLoading">
+      <p>Loading document infrastructure indices...</p>
+    </div>
+  </div>
+</div>
