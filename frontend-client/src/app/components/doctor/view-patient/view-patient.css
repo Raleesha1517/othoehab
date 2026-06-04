@@ -9,7 +9,6 @@
   color: #2b2d42;
 }
 
-/* View Header Block minimized */
 .view-header-block {
   margin-bottom: 1rem;
   padding-bottom: 0rem;
@@ -41,6 +40,97 @@
 }
 
 /* ==========================================================================
+   💡 Follow-up Dashboard Overview Strip Panel (New Section Block)
+   ========================================================================== */
+.followup-overview-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.overview-meta-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  min-width: 260px;
+  flex: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.overview-meta-card .meta-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 1rem;
+  font-size: 1.25rem;
+}
+
+.past-milestone {
+  border-left: 4px solid #64748b;
+}
+.past-milestone .meta-icon-wrapper {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.future-milestone {
+  border-left: 4px solid #0d9488;
+}
+.future-milestone .meta-icon-wrapper {
+  background-color: #ccfbf1;
+  color: #0f766e;
+}
+
+.meta-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15rem;
+}
+
+.meta-value {
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.action-btn-portal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #005f73;
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  align-self: stretch;
+}
+
+.action-btn-portal:hover {
+  background-color: #004d5e;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
    Detail Card & Slim Header Component Matrix
    ========================================================================== */
 .patient-view-content {
@@ -58,7 +148,6 @@
   flex-direction: column;
 }
 
-/* Optimized compact banner profile layout */
 .card-header-section {
   background: linear-gradient(135deg, #005f73 0%, #0a7ea4 100%);
   color: #ffffff;
@@ -124,7 +213,17 @@
   transform: translateY(-1px);
 }
 
-/* Inline header warning node */
+.save-btn {
+  background-color: #059669; 
+  color: white; 
+  margin-right: 0.5rem;
+}
+
+.cancel-btn {
+  background-color: #64748b; 
+  color: white;
+}
+
 .inline-red-flag {
   background-color: #dc2626;
   color: #ffffff;
@@ -165,6 +264,36 @@
   padding-bottom: 0;
 }
 
+.description-top-section {
+  background: #f8fafc; 
+  padding: 1.25rem; 
+  border-radius: 8px; 
+  margin-bottom: 1.5rem; 
+  border-left: 4px solid #005f73;
+}
+
+.overview-section-title {
+  margin-top: 0; 
+  color: #0f172a; 
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.overview-text-value {
+  color: #334155; 
+  line-height: 1.5; 
+  white-space: pre-line;
+}
+
+.overview-textarea {
+  width: 100%; 
+  padding: 0.5rem; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 6px;
+}
+
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -177,28 +306,23 @@
   letter-spacing: 0.5px;
 }
 
-/* Info Grid Layout Formats */
-.info-grid-row-one {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
-.info-grid-row-two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.info-grid-row-three {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.5rem;
+.info-grid-row-three-layout {
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 1.25rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.input-label-style {
+  display: block; 
+  font-size: 0.8rem; 
+  color: #64748b; 
+  margin-bottom: 0.25rem;
 }
 
 .info-label {
@@ -214,6 +338,16 @@
   font-size: 1rem;
   margin: 0;
   line-height: 1.5;
+}
+
+.bold-text {
+  font-weight: 600; 
+  color: #0f172a; 
+  margin: 0;
+}
+
+.reset-margin {
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -234,7 +368,6 @@
 .badge-category.medicine { background-color: #e0f2fe; color: #0369a1; }
 .badge-category.other { background-color: #fef9c3; color: #854d0e; }
 
-/* Clinical Red Flags Warning Panel */
 .red-flags-display {
   background-color: #fee2e2;
   border-left: 4px solid #dc2626;
@@ -247,16 +380,47 @@
 }
 
 .red-flags-display.critical-alert {
-  background-color: #fef2f2;
-  border-color: #ef4444;
+  margin-bottom: 1.5rem; 
+  background: #fff1f2; 
+  border-left: 4px solid #e11d48; 
+  padding: 1rem; 
+  border-radius: 6px;
+}
+
+.alert-heading {
+  color: #9f1239;
+}
+
+.alert-text-body {
+  margin-top: 0.25rem; 
+  color: #4c0519;
+}
+
+.alert-input-container {
+  margin-top: 0.5rem;
+}
+
+.custom-alert-border {
+  width: 100%; 
+  padding: 0.5rem; 
+  border: 1px solid #fca5a5; 
+  border-radius: 6px;
 }
 
 /* ==========================================================================
-   Resource Infrastructure Blocks (Allocations, Records, Attachments)
+   Resource Infrastructure Blocks
    ========================================================================== */
 .resource-section {
   background-color: #f0f9ff;
   border-left: 4px solid #0ea5e9;
+}
+
+.medical-records-border {
+  border-left-color: #0284c7;
+}
+
+.letters-border {
+  border-left-color: #4f46e5;
 }
 
 .section-header-with-action {
@@ -264,13 +428,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-}
-
-.section-header-with-action .section-title {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .btn-allocate {
@@ -291,6 +448,14 @@
 .btn-allocate:hover {
   background-color: #059669;
   transform: translateY(-1px);
+}
+
+.record-bg {
+  background-color: #0284c7;
+}
+
+.letters-bg {
+  background-color: #4f46e5;
 }
 
 .resource-list {
@@ -344,6 +509,11 @@
   font-weight: 600;
 }
 
+.letter-badge-style {
+  background: #eef2ff; 
+  color: #4f46e5;
+}
+
 .resource-description {
   margin: 0.5rem 0;
   color: #64748b;
@@ -351,7 +521,6 @@
   line-height: 1.4;
 }
 
-/* Interactive Attachments Matrix Nodes */
 .attachments-list {
   display: flex;
   flex-wrap: wrap;
@@ -438,6 +607,10 @@
 .btn-delete-small { color: #ef4444; }
 .btn-delete-small:hover { color: #dc2626; }
 
+.letter-text-color {
+  color: #4f46e5;
+}
+
 .empty-resource {
   text-align: center;
   padding: 1.5rem;
@@ -453,7 +626,7 @@
 }
 
 /* ==========================================================================
-   Footer Component Actions
+   Footer Actions
    ========================================================================== */
 .card-footer-section {
   background-color: #f8fafc;
@@ -483,6 +656,10 @@
 .btn-primary:hover {
   background-color: #004d5e;
   transform: translateY(-1px);
+}
+
+.green-bg {
+  background-color: #059669;
 }
 
 .btn-secondary {
@@ -619,74 +796,7 @@
 }
 
 /* ==========================================================================
-   Responsive Viewport Adaptability Media Rules
-   ========================================================================== */
-@media (max-width: 768px) {
-  .patient-view-container {
-    padding: 1rem;
-  }
-
-  .card-header-section {
-    padding: 1.25rem 1rem;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .card-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .patient-full-name {
-    font-size: 1.25rem;
-  }
-
-  .info-grid-row-two {
-    grid-template-columns: 1fr;
-  }
-
-  .info-grid-row-three {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .card-footer-section {
-    flex-direction: column-reverse;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
-
-  .modal-overlay-backdrop {
-    padding: 1rem;
-  }
-  
-  .modal-surface-container.pdf-viewer-layout-override {
-    height: 90vh;
-  }
-}
-
-@media (max-width: 480px) {
-  .patient-view-container {
-    padding: 0.75rem;
-  }
-
-  .info-grid-row-three {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 0.95rem;
-  }
-}
-
-/* ==========================================================================
-   Visibility Toggle Switches and Hidden Item Aesthetics Override Matrix
+   Visibility Toggle Switches
    ========================================================================== */
 .title-with-toggle {
   display: flex;
@@ -713,7 +823,6 @@
   text-transform: uppercase;
 }
 
-/* Base switch layout setup container */
 .switch-toggle-node {
   position: relative;
   display: inline-block;
@@ -721,14 +830,12 @@
   height: 20px;
 }
 
-/* Hide native default checkbox graphics */
 .switch-toggle-node input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* Custom CSS styled slider canvas tracking row base */
 .slider-toggle-round {
   position: absolute;
   cursor: pointer;
@@ -766,11 +873,10 @@ input:checked + .slider-toggle-round:before {
   transform: translateX(16px);
 }
 
-/* Modifiers applied smoothly directly to minimized structural item rows */
 .resource-item.item-hidden {
   border-color: #e2e8f0;
   background-color: #f8fafc;
-  opacity: 0.85;
+  opacity: 0.65;
 }
 
 .toggleable-resource-content {
@@ -783,6 +889,97 @@ input:checked + .slider-toggle-round:before {
   to { opacity: 1; transform: translateY(0); max-height: 500px; }
 }
 
+/* ==========================================================================
+   Form Editing Elements & Inputs
+   ========================================================================== */
+.edit-input-field {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.edit-input-field.name-edit {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  max-width: 320px;
+}
+
+.edit-select-field {
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.9rem;
+  background: white;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   Responsive Viewport Adaptability Media Rules
+   ========================================================================== */
+@media (max-width: 768px) {
+  .patient-view-container {
+    padding: 1rem;
+  }
+
+  .followup-overview-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .action-btn-portal {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  .card-header-section {
+    padding: 1.25rem 1rem;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .patient-full-name {
+    font-size: 1.25rem;
+  }
+
+  .card-footer-section {
+    flex-direction: column-reverse;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .modal-overlay-backdrop {
+    padding: 1rem;
+  }
+  
+  .modal-surface-container.pdf-viewer-layout-override {
+    height: 90vh;
+  }
+}
+
 @media (max-width: 580px) {
   .resource-header {
     flex-direction: row !important;
@@ -792,3 +989,40 @@ input:checked + .slider-toggle-round:before {
   }
 }
 
+@media (max-width: 480px) {
+  .patient-view-container {
+    padding: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* Append this at the bottom of view-patient.css */
+
+.visibility-toggle-action {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Uniformly separate slider toggles, status labels, and the trash icon */
+}
+
+.btn-delete-resource-allocation {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.15rem;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-delete-resource-allocation:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+  transform: scale(1.05);
+}

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\API\FollowupController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Note: Custom endpoints are explicitly placed ABOVE apiResource to prevent parameter matching conflicts
     Route::post('exercises/toggle-visibility', [ExerciseController::class, 'toggleVisibility']);
     Route::post('exercises/assign', [ExerciseController::class, 'assignToPatient']);
+    Route::delete('exercises/unassign', [ExerciseController::class, 'unassignFromPatient']);
     Route::get('patients/{patientId}/exercises', [ExerciseController::class, 'getPatientExercises']);
     Route::apiResource('exercises', ExerciseController::class);
     
@@ -47,4 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Explicit visibility modifier placed above resource map to intercept route lookup properly
     Route::put('patient-documents/{id}/toggle-visibility', [PatientDocumentController::class, 'toggleVisibility']);
     Route::apiResource('patient-documents', PatientDocumentController::class);
+
+    // Follow-up Session Management Routes
+    Route::get('patients/{patientId}/followups', [FollowupController::class, 'index']);
+    Route::post('followups', [FollowupController::class, 'store']);
+    Route::put('followups/{id}', [FollowupController::class, 'update']);
+    Route::delete('followups/{id}', [FollowupController::class, 'destroy']);
 });

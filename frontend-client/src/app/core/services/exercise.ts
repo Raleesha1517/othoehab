@@ -61,6 +61,28 @@ export class Exercise {
     return this.http.post(`${this.apiUrl}/assign`, payload, this.getHeaders());
   }
 
+  /**
+   * 💡 NEW: Removes the allocation link joining a specific exercise to a target patient pivot track.
+   * Sends a DELETE request with data payloads containing routing parameters.
+   */
+  unassignExerciseFromPatient(patientId: number, exerciseId: number): Observable<any> {
+    // If your Laravel API expects payload markers within an options block body:
+    return this.http.delete(`${this.apiUrl}/unassign`, {
+      ...this.getHeaders(),
+      body: {
+        patient_id: patientId,
+        exercise_id: exerciseId
+      }
+    });
+
+    /* NOTE: If your Laravel backend endpoint uses route path parameters instead like:
+    Route::delete('exercises/unassign/{patientId}/{exerciseId}', ...)
+    
+    Then uncomment and use this format instead:
+    return this.http.delete(`${this.apiUrl}/unassign/${patientId}/${exerciseId}`, this.getHeaders());
+    */
+  }
+
   getPatientExercises(patientId: number): Observable<any> {
     return this.http.get(
       `${environment.apiUrl}/patients/${patientId}/exercises`,

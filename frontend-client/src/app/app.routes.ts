@@ -14,6 +14,7 @@ import { DoctorTemplate } from './components/doctor/doctor-template/doctor-templ
 import { AllocateDocuments } from './components/doctor/allocate-documents/allocate-documents';
 import { guestGuard } from './core/guards/guest-guard';
 import { PatientMassage } from './components/patients/patient-massage/patient-massage';
+import { FollowupComponent } from './components/doctor/followup/followup';
 
 export const routes: Routes = [
   { path: '', component: Logging, canActivate: [guestGuard] },
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: 'allocate-exercise/:patientId', component: AllocateExercise, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'allocate-documents/:patientId', component: AllocateDocuments, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'patient-dashboard', component: PatientHome, canActivate: [roleGuard], data: { roles: ['patient'] } },
+   { path: 'patient-followups/:patientId', component: FollowupComponent, canActivate: [roleGuard], data: { roles: ['doctor'] } },
    { path: 'patient-massage', component: PatientMassage, canActivate: [roleGuard], data: { roles: ['patient'] } },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

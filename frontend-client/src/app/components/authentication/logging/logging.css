@@ -181,3 +181,27 @@
   cursor: not-allowed;
   transform: none;
 }
+
+.btn-submit:disabled .btn-icon {
+  color: #a0aec0;
+}
+
+/* ==========================================================================
+   Login Scene Base Container Typography Patch
+   ========================================================================== */
+.login-scene {
+  /* ... keep your existing height, background, layout styles ... */
+  
+  /* 💡 Added Poppins with fallback support for local Sinhala fonts */
+  font-family: 'Poppins', 'Noto Sans Sinhala', system-ui, -apple-system, sans-serif;
+}
+
+/* Explicit fallback assignments to ensure strict input fields align cleanly */
+.login-scene input,
+.login-scene button,
+.login-scene label,
+.login-scene h2,
+.login-scene p {
+  font-family: 'Poppins', 'Noto Sans Sinhala', system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.2px; /* Adds crisp legibility definitions for Sinhala scripts */
+}

@@ -183,6 +183,28 @@ class ExerciseController extends Controller
     }
 
     /**
+     * 💡 ADD THIS METHOD inside your ExerciseController class
+     * Detach an exercise allocation mapping record from a specific patient profile
+     */
+    public function unassignFromPatient(Request $request)
+    {
+        $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'exercise_id' => 'required|exists:exercises,id',
+        ]);
+
+        $patient = Patient::findOrFail($request->patient_id);
+        
+        // Detaches the entry from the exercise_patient pivot table
+        $patient->exercises()->detach($request->exercise_id);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Exercise allocation unassigned successfully.'
+        ], 200);
+    }
+
+    /**
      * Get patient's assigned exercises with root-level visibility flag maps
      */
     public function getPatientExercises($patientId)

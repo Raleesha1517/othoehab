@@ -1,0 +1,93 @@
+<div class="patient-view-container">
+  <div class="patient-view-content">
+    
+    <div class="view-header-block" style="display: flex; justify-content: space-between; align-items: center;">
+      <button class="back-btn" [routerLink]="['/view-patient', patientId]">
+        ← Back to Patient Profile
+      </button>
+      <button class="btn-allocate" (click)="openAddModal()">
+        + Record New Follow-up Session
+      </button>
+    </div>
+
+    <div class="resource-list" style="margin-top: 1.5rem;">
+      <h3 class="section-title">Follow-up History Log Entries</h3>
+      
+      <div *ngIf="followups.length === 0" class="empty-resource">
+        <p>No historical follow-up sessions tracked on file for this patient profile yet.</p>
+      </div>
+
+      <div class="resource-item" *ngFor="let item of followups">
+        <div class="resource-header">
+          <h4 style="font-weight: 700; color: #005f73;">
+            Session Date: {{ item.followup_date | date:'longDate' }}
+          </h4>
+          <div class="card-actions" style="gap: 0.5rem;">
+            <button class="btn-download-small" (click)="openEditModal(item)">Edit</button>
+            <button class="btn-delete-small" (click)="deleteFollowup(item.id)">Delete</button>
+          </div>
+        </div>
+
+        <div style="margin: 0.75rem 0; font-size: 0.95rem; color: #2b2d42;">
+          <strong>Clinical Decisions:</strong>
+          <p class="resource-description" style="margin-top: 0.25rem;">{{ item.clinical_decisions || 'No structural observations recorded.' }}</p>
+        </div>
+
+        <div style="margin-bottom: 0.5rem; font-size: 0.9rem;">
+          <strong style="color: #475569;">Allocated Assets/Documents:</strong> 
+          <span style="color: #0ea5e9; font-weight: 600; margin-left: 0.25rem;">
+            {{ item.allocated_document_name || 'None' }}
+          </span>
+        </div>
+
+        <div *ngIf="item.next_followup_date" class="attachment-item-mini" style="width: fit-content; margin-top: 0.5rem; background-color: #f0f9ff; border-left: 3px solid #10b981;">
+          <span class="info-label" style="color: #166534;">Next Reminder Schedule:</span>
+          <span style="font-weight: 600; color: #166534; margin-left: 0.25rem;">{{ item.next_followup_date | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay-backdrop sync-z-index" *ngIf="showForm">
+  <div class="modal-surface-container" style="max-width: 550px;">
+    
+    <div class="modal-header-container">
+      <h3>{{ isEditMode ? 'Modify Follow-up Session Log' : 'Log New Follow-up Session' }}</h3>
+      <button class="modal-close-x" (click)="closeModal()">×</button>
+    </div>
+
+    <form (ngSubmit)="saveFollowup()" #followupForm="ngForm">
+      <div class="modal-scroller-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="info-item">
+          <label class="info-label">Session Date</label>
+          <input type="date" class="edit-input-field" [(ngModel)]="currentFollowup.followup_date" name="followup_date" required>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Clinical Decisions & Session Notes</label>
+          <textarea class="edit-textarea-field" rows="4" [(ngModel)]="currentFollowup.clinical_decisions" name="clinical_decisions" placeholder="Enter findings, physical modifications, track parameters..."></textarea>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Allocated Document / Exercise Names</label>
+          <input type="text" class="edit-input-field" [(ngModel)]="currentFollowup.allocated_document_name" name="allocated_document_name" placeholder="e.g., Shoulder Extension Protocol PDF, YouTube Rehab link">
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Next Scheduled Follow-up Date (Automated Reminder Trigger)</label>
+          <input type="date" class="edit-input-field" [(ngModel)]="currentFollowup.next_followup_date" name="next_followup_date">
+        </div>
+
+      </div>
+
+      <div class="modal-footer-action-row inline-padding-override">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="!followupForm.form.valid">Save Session Data</button>
+      </div>
+    </form>
+
+  </div>
+</div>
