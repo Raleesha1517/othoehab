@@ -523,3 +523,126 @@
     padding-bottom: 4px;
   }
 }
+
+.lang-switcher-inline {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.lang-switcher-inline button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang-switcher-inline button.active-lang {
+  background: #005f73;
+  color: white;
+  border-color: #005f73;
+}
+
+.patient-dashboard-container {
+  /* ... other existing styles ... */
+  font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+}
+
+/* Optional: Specifically optimize headers or labels for Sinhala */
+.subtitle, .info-label, .section-title-small {
+  font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+  letter-spacing: 0.2px; /* Slight spacing helps Sinhala readability */
+}
+
+/* Container holding language controls and followup details side-by-side */
+.header-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.lang-switcher-inline {
+  display: flex;
+  gap: 5px;
+}
+
+.lang-switcher-inline button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-switcher-inline button.active-lang {
+  background: #005f73;
+  color: white;
+  border-color: #005f73;
+}
+
+/* Follow-up Badge Style Node */
+.followup-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.followup-header-badge i {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+/* Highlight style variant if a future date exists */
+.followup-header-badge.has-date {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.followup-header-badge.has-date i {
+  color: #22c55e;
+}
+
+.followup-label {
+  font-weight: 500;
+}
+
+.followup-date-val {
+  font-weight: 600;
+}
+
+.pdf-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 20px;
+}
+.pdf-modal-card {
+  background: #ffffff; width: 100%; max-width: 900px;
+  height: 85vh; border-radius: 12px; display: flex; flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden;
+}
+.pdf-modal-header {
+  padding: 16px 24px; border-bottom: 1px solid #e2e8f0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pdf-modal-body { flex: 1; background: #f8fafc; }
+.btn-close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }

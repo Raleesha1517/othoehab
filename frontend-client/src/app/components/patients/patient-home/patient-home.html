@@ -1,25 +1,39 @@
 <div class="patient-dashboard-container">
-  
   <header class="dashboard-header-block">
     <div class="header-titles">
-      <p class="subtitle">Health Records & Information — Dr. Melanie Amarasooriya</p>
+      <p class="subtitle">{{ ui[currentLang].subtitle }}</p>
+      
+      <div class="header-controls-row">
+        <div class="lang-switcher-inline">
+          <button (click)="setLanguage('en')" [class.active-lang]="currentLang === 'en'">EN</button>
+          <button (click)="setLanguage('si')" [class.active-lang]="currentLang === 'si'">සිං</button>
+          <button (click)="setLanguage('ta')" [class.active-lang]="currentLang === 'ta'">தமிழ்</button>
+        </div>
+
+        <div class="followup-header-badge" [class.has-date]="closestFollowupDate">
+          <i class="ti ti-calendar-event"></i>
+          <span class="followup-label">{{ ui[currentLang].nextFollowup }}</span>
+          <strong class="followup-date-val">
+            {{ closestFollowupDate ? (closestFollowupDate | date:'longDate') : ui[currentLang].noFollowup }}
+          </strong>
+        </div>
+      </div>
     </div>
     
     <div class="header-navigation-actions" *ngIf="!isLoading && patientDetails">
       <button class="nav-jump-btn border-exercises" (click)="scrollToSection('exercises-section')">
-        <i class="ti ti-stretching"></i> Exercises
+        <i class="ti ti-stretching"></i> {{ ui[currentLang].exercises }}
       </button>
       <button class="nav-jump-btn border-records" (click)="scrollToSection('records-section')">
-        <i class="ti ti-files"></i> Health Records
+        <i class="ti ti-files"></i> {{ ui[currentLang].records }}
       </button>
       <button class="nav-jump-btn border-letters" (click)="scrollToSection('letters-section')">
-        <i class="ti ti-file-description"></i> Medical Letters
+        <i class="ti ti-file-description"></i> {{ ui[currentLang].letters }}
       </button>
     </div>
   </header>
 
   <div class="patient-content-wrapper" *ngIf="!isLoading && patientDetails; else loadingState">
-    
     <div class="patient-profile-card">
       <div class="card-header-section">
         <div class="profile-identifier">
@@ -31,15 +45,15 @@
       <div class="card-body-section">
         <div class="info-grid-row-three">
           <div class="info-item">
-            <label class="info-label">Age</label>
-            <p class="info-value">{{ patientDetails.age ?? 'N/A' }} years</p>
+            <label class="info-label">{{ ui[currentLang].age }}</label>
+            <p class="info-value">{{ patientDetails.age ?? 'N/A' }} {{ ui[currentLang].years }}</p>
           </div>
           <div class="info-item">
-            <label class="info-label">Contact Number</label>
-            <p class="info-value">{{ patientDetails.phone ?? 'Not provided' }}</p>
+            <label class="info-label">{{ ui[currentLang].contact }}</label>
+            <p class="info-value">{{ patientDetails.phone ?? '---' }}</p>
           </div>
           <div class="info-item">
-            <label class="info-label">Classification Category</label>
+            <label class="info-label">{{ ui[currentLang].category }}</label>
             <p class="info-value">
               <span class="badge-category" [ngClass]="patientDetails.category?.toLowerCase()">
                 {{ patientDetails.category }}
@@ -50,21 +64,17 @@
       </div>
     </div>
 
-    <div class="patient-resources-layout">
+    <div class="dashboard-instruction-banner">
+      <div class="ins-icon-wrapper"><i class="ti ti-info-circle"></i></div>
+      <div class="ins-text-content">
+        <strong>{{ ui[currentLang].insTitle }}</strong> {{ ui[currentLang].insBody }}
+      </div>
+    </div>
 
+    <div class="patient-resources-layout">
       <section id="exercises-section" class="info-section resource-section">
         <div class="section-header-with-action">
-          <h4 class="section-title-small"><i class="ti ti-stretching"></i> Allocated Exercises</h4>
-        </div>
-
-        <div class="dashboard-instruction-banner">
-          <div class="ins-icon-wrapper">
-            <i class="ti ti-info-circle"></i>
-          </div>
-          <div class="ins-text-content">
-            <strong>How to access your resources:</strong> 
-            Use your exercises by clicking directly on them in the exercise section. For your health records or official letters, click the download or view buttons.
-          </div>
+          <h4 class="section-title-small"><i class="ti ti-stretching"></i> {{ ui[currentLang].exercises }}</h4>
         </div>
         
         <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
@@ -72,14 +82,18 @@
             <div *ngIf="exercise.is_visible" class="resource-item">
               <div class="resource-header">
                 <h5>{{ exercise.title || exercise.name }}</h5>
-                <span class="attachment-count">{{ exercise.attachments?.length || 0 }} files</span>
+                <span class="attachment-count">{{ exercise.attachments?.length || 0 }} {{ ui[currentLang].files }}</span>
               </div>
-              <p class="resource-description">{{ exercise.description || 'No description assigned.' }}</p>
               
               <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
-                <div *ngFor="let att of exercise.attachments" class="attachment-item-mini" (click)="viewAttachment(att)">
+                <div *ngFor="let att of exercise.attachments" class="attachment-item-mini" (click)="viewAttachment(att)" style="cursor: pointer;">
                   <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
-                  <span class="att-label">{{ att.label || att.title }}</span>
+                  <span class="att-label">
+                    {{ att.label || att.title }} — 
+                    <small class="view-link-highlight" style="color: #005f73; font-weight: 600; text-decoration: underline;">
+                      {{ ui[currentLang].viewClick }}
+                    </small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -87,13 +101,13 @@
         </div>
         
         <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
-          <p>No exercises allocated yet.</p>
+          <p>{{ ui[currentLang].noExercises }}</p>
         </div>
       </section>
 
       <section id="records-section" class="info-section resource-section health-records-border">
         <div class="section-header-with-action">
-          <h4 class="section-title-small"><i class="ti ti-files"></i> My Health Records</h4>
+          <h4 class="section-title-small"><i class="ti ti-files"></i> {{ ui[currentLang].records }}</h4>
         </div>
         
         <div *ngIf="!resourcesLoading && medicalRecords.length > 0" class="resource-list">
@@ -103,10 +117,9 @@
                 <h5>{{ doc.original_filename || doc.name }}</h5>
                 <span class="category-badge">{{ doc.category }}</span>
               </div>
-              <p class="resource-description">{{ doc.description || 'General health document.' }}</p>
               <div class="doc-actions">
                 <button class="btn-download-small" (click)="downloadDocument(doc.id, doc.original_filename || doc.name)">
-                  <i class="ti ti-download"></i> Download Record
+                  <i class="ti ti-download"></i> {{ ui[currentLang].download }}
                 </button>
               </div>
             </div>
@@ -116,45 +129,43 @@
 
       <section id="letters-section" class="info-section resource-section medical-letters-border">
         <div class="section-header-with-action">
-          <h4 class="section-title-small"><i class="ti ti-file-description"></i> Official Medical Letters</h4>
+          <h4 class="section-title-small"><i class="ti ti-file-description"></i> {{ ui[currentLang].letters }}</h4>
         </div>
-        
         <div *ngIf="!resourcesLoading && medicalLetters.length > 0" class="resource-list">
           <ng-container *ngFor="let templateDoc of medicalLetters">
             <div *ngIf="templateDoc.isVisible" class="resource-item">
               <div class="resource-header">
                 <h5>{{ templateDoc.original_filename || templateDoc.name }}</h5>
-                <span class="category-badge letter-badge-color">Template</span>
               </div>
               <div class="doc-actions">
                 <button class="btn-download-small letter-text-color" (click)="downloadDocument(templateDoc.id, templateDoc.original_filename || templateDoc.name)">
-                  <i class="ti ti-download"></i> View Document
+                  <i class="ti ti-download"></i> {{ ui[currentLang].download }}
                 </button>
               </div>
             </div>
           </ng-container>
         </div>
       </section>
-
     </div>
   </div>
 
   <ng-template #loadingState>
     <div class="loading-container">
-      <p>Fetching your health profile...</p>
+      <p>{{ ui[currentLang].loading }}</p>
     </div>
   </ng-template>
 
-  <div class="modal-overlay-backdrop" *ngIf="showPdfModal">
-    <div class="modal-surface-container">
-      <div class="modal-header-container">
-        <h3>{{ activePdfTitle }}</h3>
-        <button class="modal-close-x" (click)="closePdfModal()">&times;</button>
+  <div class="pdf-modal-backdrop" *ngIf="showPdfModal">
+    <div class="pdf-modal-card">
+      <div class="pdf-modal-header">
+        <h4>{{ activePdfTitle }}</h4>
+        <button class="btn-close-modal" (click)="closePdfModal()">
+          <i class="ti ti-x"></i>
+        </button>
       </div>
-      <div class="modal-scroller-body">
-        <iframe *ngIf="activePdfUrl" [src]="activePdfUrl" class="pdf-iframe-renderer"></iframe>
+      <div class="pdf-modal-body">
+        <iframe *ngIf="activePdfUrl" [src]="activePdfUrl" width="100%" height="100%" frameborder="0"></iframe>
       </div>
     </div>
   </div>
 </div>
-

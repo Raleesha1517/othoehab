@@ -35,4 +35,8 @@ class Patient extends Model
     {
         return $this->hasMany(PatientTemplate::class);
     }
+
+    public function followups() {
+    return $this->hasMany(Followup::class)->orderBy('followup_date', 'desc');
+}
 }

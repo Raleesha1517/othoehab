@@ -1,9 +1,13 @@
+
+
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Exercise } from '../../../core/services/exercise';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-allocate-exercise',
@@ -21,16 +25,22 @@ export class AllocateExercise implements OnInit {
   selectedExercises: Set<number> = new Set();
   isAllocating = false;
 
+  // Embedded PDF view engine controllers
+  showPdfModal = false;
+  activePdfUrl: SafeResourceUrl | null = null;
+  activePdfTitle = '';
+
   constructor(
     private exerciseService: Exercise,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer // 💡 Injected sanitizer for embedded rendering
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.patientId = params['patientId'];
+      this.patientId = params['patientId'] ? Number(params['patientId']) : null;
       if (this.patientId) {
         this.loadExercises();
       } else {
@@ -41,21 +51,61 @@ export class AllocateExercise implements OnInit {
 
   loadExercises(): void {
     this.exerciseService.getExercises().subscribe({
-      next: (data) => {
-        this.exercises = data;
-        this.filteredExercises = data;
+      next: (data: any[]) => {
+        // FIX: Standardize structural properties safely to evaluate names and titles uniformly
+        this.exercises = data.map(item => ({
+          ...item,
+          name: item.name || item.title
+        }));
+        this.filteredExercises = [...this.exercises];
         this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load exercises:', err);
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'Failed to load exercises'
+          title: 'Sync Error',
+          text: 'Failed to synchronize base clinical exercises data mapping.'
         });
         this.cdr.markForCheck();
       }
     });
+  }
+
+  viewAttachment(attachment: any): void {
+    let targetUrl = attachment.url;
+    
+    if (!targetUrl) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Broken Target',
+        text: 'No active resource path location parameter could be resolved.'
+      });
+      return;
+    }
+
+    // Prefix relative upload links using the API ecosystem root domain context safely
+    if (attachment.type === 'pdf' && targetUrl.startsWith('/storage/')) {
+      const baseUrl = environment.apiUrl.replace(/\/api$/, '');
+      targetUrl = `${baseUrl}${targetUrl}`;
+    }
+
+    if (attachment.type === 'pdf') {
+      this.activePdfTitle = attachment.label || attachment.title || 'Resource PDF View';
+      this.activePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(targetUrl);
+      this.showPdfModal = true;
+    } else {
+      // YouTube/Drive links open cleanly outside the active session stream environment
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    }
+    this.cdr.markForCheck();
+  }
+
+  closePdfModal(): void {
+    this.showPdfModal = false;
+    this.activePdfUrl = null;
+    this.activePdfTitle = '';
+    this.cdr.markForCheck();
   }
 
   filterExercises(): void {
@@ -64,8 +114,8 @@ export class AllocateExercise implements OnInit {
       this.filteredExercises = this.exercises;
     } else {
       this.filteredExercises = this.exercises.filter(e =>
-        e.title?.toLowerCase().includes(term) ||
-        e.description?.toLowerCase().includes(term)
+        (e.name || '').toLowerCase().includes(term) ||
+        (e.description || '').toLowerCase().includes(term)
       );
     }
     this.cdr.markForCheck();
@@ -100,7 +150,6 @@ export class AllocateExercise implements OnInit {
       this.exerciseService.assignExerciseToPatient(this.patientId!, exerciseId)
     );
 
-    // Use forkJoin to wait for all allocations
     Promise.all(allocations.map(obs => obs.toPromise())).then(() => {
       this.isAllocating = false;
       Swal.fire({
@@ -116,10 +165,11 @@ export class AllocateExercise implements OnInit {
       }, 1500);
     }).catch((err) => {
       this.isAllocating = false;
+      console.error('Allocation failure:', err);
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to allocate exercises'
+        title: 'Allocation Error',
+        text: 'Failed to link parameters to the current target patient register profile.'
       });
       this.cdr.markForCheck();
     });

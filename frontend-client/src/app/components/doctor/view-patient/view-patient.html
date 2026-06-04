@@ -10,24 +10,63 @@
 
   <div class="patient-view-content" *ngIf="!isLoading && patientDetails; else loadingState">
     
+    <div class="followup-overview-strip" *ngIf="!isEditing">
+      <div class="overview-meta-card past-milestone" *ngIf="closestPastFollowup">
+        <div class="meta-icon-wrapper">
+          <i class="ti ti-history"></i>
+        </div>
+        <div class="meta-details">
+          <span class="meta-label">Last Follow-up Session</span>
+          <strong class="meta-value">{{ closestPastFollowup.followup_date | date:'mediumDate' }}</strong>
+        </div>
+      </div>
+
+      <div class="overview-meta-card future-milestone" *ngIf="closestFutureFollowup">
+        <div class="meta-icon-wrapper">
+          <i class="ti ti-calendar-event"></i>
+        </div>
+        <div class="meta-details">
+          <span class="meta-label">Next Scheduled Followup Date</span>
+          <strong class="meta-value">{{ closestFutureFollowup.next_followup_date | date:'mediumDate' }}</strong>
+        </div>
+      </div>
+
+      <button class="action-btn-portal" (click)="goToFollowups()">
+        <i class="ti ti-external-link"></i> Manage Follow-up
+      </button>
+    </div>
+
     <div class="patient-detail-card">
       <div class="card-header-section">
         <div class="profile-header">
           <div class="profile-identifiers">
             <span class="badge-code">{{ patientDetails.patient_code }}</span>
-            <h2 class="patient-full-name">{{ patientDetails.name }}</h2>
+            <h2 class="patient-full-name" *ngIf="!isEditing">{{ patientDetails.name }}</h2>
+            <input type="text" class="edit-input-field name-edit" *ngIf="isEditing" [(ngModel)]="editForm.name" placeholder="Patient Name">
             
-            <span class="badge-category" [ngClass]="patientDetails.category?.toLowerCase()">
+            <span class="badge-category" *ngIf="!isEditing" [ngClass]="patientDetails.category?.toLowerCase()">
               {{ patientDetails.category }}
             </span>
+            <select class="edit-select-field" *ngIf="isEditing" [(ngModel)]="editForm.category">
+              <option value="Surgery">Surgery</option>
+              <option value="Rehabilitation">Rehabilitation</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           
           <div class="card-actions">
-            <div class="inline-red-flag" *ngIf="patientDetails.red_flags" [title]="patientDetails.red_flags">
+            <div class="inline-red-flag" *ngIf="patientDetails.red_flags && !isEditing" [title]="patientDetails.red_flags">
               🚩 Critical Red Flags Active
             </div>
-            <button class="action-btn edit-btn" (click)="editPatient()">
-              <i class="ti ti-edit"></i> Edit
+            
+            <button class="action-btn edit-btn" *ngIf="!isEditing" (click)="startEditing()">
+              <i class="ti ti-edit"></i> Edit Profile
+            </button>
+            <button class="action-btn save-btn" *ngIf="isEditing" (click)="savePatientChanges()">
+              <i class="ti ti-check"></i> Save
+            </button>
+            <button class="action-btn cancel-btn" *ngIf="isEditing" (click)="cancelEditing()">
+              <i class="ti ti-x"></i> Cancel
             </button>
           </div>
         </div>
@@ -35,90 +74,109 @@
 
       <div class="card-body-section">
         
-        <div class="red-flags-display critical-alert" *ngIf="patientDetails.red_flags" style="margin-bottom: 1rem;">
-          <strong>🚩 Clinical Red Flags & Restrictions:</strong> {{ patientDetails.red_flags }}
+        <section class="info-section description-top-section">
+          <h3 class="overview-section-title">Clinical Case Overview & Description</h3>
+          <div *ngIf="!isEditing">
+            <p class="info-value overview-text-value">{{ patientDetails.description || 'No descriptive clinical documentation recorded.' }}</p>
+          </div>
+          <div *ngIf="isEditing">
+            <textarea class="edit-textarea-field overview-textarea" [(ngModel)]="editForm.description" rows="3" placeholder="Enter clinical documentation description..."></textarea>
+          </div>
+        </section>
+
+        <div class="red-flags-display critical-alert" *ngIf="patientDetails.red_flags || isEditing">
+          <strong class="alert-heading">🚩 Clinical Red Flags & Restrictions:</strong>
+          <div *ngIf="!isEditing" class="alert-text-body">
+            {{ patientDetails.red_flags || 'None reported.' }}
+          </div>
+          <div *ngIf="isEditing" class="alert-input-container">
+            <input type="text" class="edit-input-field full-width custom-alert-border" [(ngModel)]="editForm.red_flags" placeholder="List any medical risks, red flags, or procedural restrictions...">
+          </div>
         </div>
 
-        <section class="info-section">
+        <section class="info-section personal-details-wrapper">
           <h3 class="section-title">Patient Profile Information</h3>
-          <div class="info-grid-row-three">
-            <div class="info-item">
-              <label class="info-label">Full Name</label>
-              <p class="info-value" style="font-weight: 600; color: #0f172a;">{{ patientDetails.name }}</p>
-            </div>
-            <div class="info-item">
-              <label class="info-label">Age</label>
-              <p class="info-value">{{ patientDetails.age ?? 'N/A' }} years</p>
-            </div>
-            <div class="info-item">
-              <label class="info-label">Phone Number</label>
-              <p class="info-value">{{ patientDetails.phone ?? 'Not provided' }}</p>
-            </div>
-          </div>
           
-          <div class="info-grid-row-one" style="margin-top: 1.5rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem;" *ngIf="patientDetails.nic_number || patientDetails.email">
+          <div class="info-grid-row-three-layout">
             <div class="info-item">
-              <label class="info-label">Secondary Contact Details</label>
-              <p class="info-value" style="font-size: 0.9rem; color: #64748b;">
-                NIC: {{ patientDetails.nic_number ?? 'N/A' }} | Email: {{ patientDetails.email ?? 'N/A' }}
-              </p>
+              <label class="info-label input-label-style">Full Name</label>
+              <p class="info-value bold-text" *ngIf="!isEditing">{{ patientDetails.name }}</p>
+              <input type="text" class="edit-input-field" *ngIf="isEditing" [(ngModel)]="editForm.name">
+            </div>
+            
+            <div class="info-item">
+              <label class="info-label input-label-style">Age</label>
+              <p class="info-value reset-margin" *ngIf="!isEditing">{{ patientDetails.age ?? 'N/A' }} years</p>
+              <input type="number" class="edit-input-field" *ngIf="isEditing" [(ngModel)]="editForm.age">
+            </div>
+            
+            <div class="info-item">
+              <label class="info-label input-label-style">Phone Number</label>
+              <p class="info-value reset-margin" *ngIf="!isEditing">{{ patientDetails.phone ?? 'Not provided' }}</p>
+              <input type="text" class="edit-input-field" *ngIf="isEditing" [(ngModel)]="editForm.phone">
             </div>
           </div>
         </section>
 
         <section class="info-section resource-section">
-          <div class="section-header-with-action">
-            <h3 class="section-title"><i class="ti ti-fitness"></i> Allocated Exercises</h3>
-            <button class="btn-allocate" (click)="goToAllocateExercises()">
-              <i class="ti ti-plus"></i> Allocate Exercise
-            </button>
-          </div>
-          
-          <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
-            <div *ngFor="let exercise of exercises" class="resource-item">
-              <div class="resource-header">
-                <div class="title-with-toggle">
-                  <h4>{{ exercise.title }}</h4>
-                  <span class="attachment-count">{{ exercise.attachments?.length || 0 }} attachment(s)</span>
-                </div>
-                
-                <div class="visibility-toggle-action">
-                  <label class="switch-toggle-node">
-                    <input type="checkbox" [checked]="exercise.isVisible" (change)="toggleVisibility(exercise, 'exercise')">
-                    <span class="slider-toggle-round"></span>
-                  </label>
-                  <span class="toggle-status-label">{{ exercise.isVisible ? 'Visible' : 'Hidden' }}</span>
-                </div>
-              </div>
-              
-              <div class="toggleable-resource-content">
-                <p class="resource-description">{{ exercise.description || 'No description' }}</p>
-                <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
-                  <div *ngFor="let att of exercise.attachments" class="attachment-item-mini interactive-view-node" (click)="viewAttachment(att)" title="Click to View Document">
-                    <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
-                    <span class="att-label">{{ att.label }}</span>
-                    <i class="ti ti-eye view-indicator-icon"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
-            <p>No exercises allocated yet. Click "Allocate Exercise" to add.</p>
-          </div>
-        </section>
+  <div class="section-header-with-action">
+    <h3 class="section-title"><i class="ti ti-fitness"></i> Allocated Exercises</h3>
+    <button class="btn-allocate" (click)="goToAllocateExercises()">
+      <i class="ti ti-plus"></i> Allocate Exercise
+    </button>
+  </div>
+  
+  <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
+    <div *ngFor="let exercise of exercises" class="resource-item" [ngClass]="{'item-hidden': !exercise.isVisible}">
+      <div class="resource-header">
+        <div class="title-with-toggle">
+          <h4>{{ exercise.title }}</h4>
+          <span class="attachment-count">{{ exercise.attachments?.length || 0 }} attachment(s)</span>
+        </div>
+        
+        <div class="visibility-toggle-action">
+          <label class="switch-toggle-node">
+            <input type="checkbox" [checked]="exercise.isVisible" (change)="toggleVisibility(exercise, 'exercise')">
+            <span class="slider-toggle-round"></span>
+          </label>
+          <span class="toggle-status-label">{{ exercise.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
 
-        <section class="info-section resource-section" style="border-left-color: #0284c7;">
+          <button class="btn-delete-resource-allocation" 
+                  (click)="removeAllocatedExercise(exercise.id)" 
+                  title="Remove Allocation from Patient">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="toggleable-resource-content">
+        <p class="resource-description">{{ exercise.description || 'No description' }}</p>
+        <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
+          <div *ngFor="let att of exercise.attachments" class="attachment-item-mini interactive-view-node" (click)="viewAttachment(att)" title="Click to View Document">
+            <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
+            <span class="att-label">{{ att.label }}</span>
+            <i class="ti ti-eye view-indicator-icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
+    <p>No exercises allocated yet. Click "Allocate Exercise" to add.</p>
+  </div>
+</section>
+
+        <section class="info-section resource-section medical-records-border">
           <div class="section-header-with-action">
             <h3 class="section-title"><i class="ti ti-files"></i> Medical Records</h3>
-            <button class="btn-allocate" (click)="goToAllocateDocuments()" style="background-color: #0284c7;">
+            <button class="btn-allocate record-bg" (click)="goToAllocateDocuments()">
               <i class="ti ti-upload"></i> Upload Record
             </button>
           </div>
           
           <div *ngIf="!resourcesLoading && medicalRecords.length > 0" class="resource-list">
-            <div *ngFor="let doc of medicalRecords" class="resource-item">
+            <div *ngFor="let doc of medicalRecords" class="resource-item" [ngClass]="{'item-hidden': !doc.isVisible}">
               <div class="resource-header">
                 <div class="title-with-toggle">
                   <h4>{{ doc.original_filename || doc.name }}</h4>
@@ -130,7 +188,7 @@
                     <input type="checkbox" [checked]="doc.isVisible" (change)="toggleVisibility(doc, 'document')">
                     <span class="slider-toggle-round"></span>
                   </label>
-                  <span class="toggle-status-label">{{ doc.isVisible ? 'Visible' : 'Hidden' }}</span>
+                  <span class="toggle-status-label">{{ doc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
                 </div>
               </div>
               
@@ -153,20 +211,20 @@
           </div>
         </section>
 
-        <section class="info-section resource-section" style="border-left-color: #4f46e5;">
+        <section class="info-section resource-section letters-border">
           <div class="section-header-with-action">
             <h3 class="section-title"><i class="ti ti-file-description"></i> Medical Letters</h3>
-            <button class="btn-allocate" (click)="goToAllocateTemplates()" style="background-color: #4f46e5;">
+            <button class="btn-allocate letters-bg" (click)="goToAllocateTemplates()">
               <i class="ti ti-plus"></i> Allocate Medical Letter
             </button>
           </div>
           
           <div *ngIf="!resourcesLoading && medicalLetters.length > 0" class="resource-list">
-            <div *ngFor="let templateDoc of medicalLetters" class="resource-item">
+            <div *ngFor="let templateDoc of medicalLetters" class="resource-item" [ngClass]="{'item-hidden': !templateDoc.isVisible}">
               <div class="resource-header">
                 <div class="title-with-toggle">
                   <h4>{{ templateDoc.original_filename || templateDoc.name }}</h4>
-                  <span class="category-badge" style="background:#eef2ff; color:#4f46e5;">{{ templateDoc.category }}</span>
+                  <span class="category-badge letter-badge-style">{{ templateDoc.category }}</span>
                 </div>
                 
                 <div class="visibility-toggle-action">
@@ -174,14 +232,14 @@
                     <input type="checkbox" [checked]="templateDoc.isVisible" (change)="toggleVisibility(templateDoc, 'document')">
                     <span class="slider-toggle-round"></span>
                   </label>
-                  <span class="toggle-status-label">{{ templateDoc.isVisible ? 'Visible' : 'Hidden' }}</span>
+                  <span class="toggle-status-label">{{ templateDoc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
                 </div>
               </div>
               
               <div class="toggleable-resource-content">
                 <p class="resource-description">{{ templateDoc.description || 'No specialized description notes documented.' }}</p>
                 <div class="doc-actions">
-                  <button class="btn-download-small" style="color: #4f46e5;" (click)="downloadDocument(templateDoc.id, templateDoc.original_filename || templateDoc.name)">
+                  <button class="btn-download-small letter-text-color" (click)="downloadDocument(templateDoc.id, templateDoc.original_filename || templateDoc.name)">
                     <i class="ti ti-download"></i> Download File
                   </button>
                   <button class="btn-delete-small" (click)="deleteDocument(templateDoc.id)">
@@ -201,7 +259,8 @@
 
       <div class="card-footer-section">
         <button class="btn-secondary" (click)="goBack()">Close</button>
-        <button class="btn-primary" (click)="editPatient()">Edit Patient</button>
+        <button class="btn-primary" *ngIf="!isEditing" (click)="startEditing()">Edit Patient</button>
+        <button class="btn-primary green-bg" *ngIf="isEditing" (click)="savePatientChanges()">Save Changes</button>
       </div>
 
     </div>
@@ -234,4 +293,3 @@
   </div>
 
 </div>
-
