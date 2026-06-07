@@ -646,3 +646,54 @@
 }
 .pdf-modal-body { flex: 1; background: #f8fafc; }
 .btn-close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+
+/* Ensure the controls container handles multi-badge wrap scenarios gracefully */
+.header-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 🌟 Styling for the new interactive Contact Badge Action button */
+.contact-trigger-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #005f73;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 95, 115, 0.2);
+}
+
+.contact-trigger-badge-btn:hover {
+  background-color: #001219;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 18, 25, 0.3);
+}
+
+.contact-trigger-badge-btn:active {
+  transform: translateY(0);
+}
+
+.contact-trigger-badge-btn i {
+  font-size: 1.1rem;
+  color: #94d2bd;
+}
+
+/* Optional Pulse Animation effect for emergency awareness */
+@keyframes pulseGlow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse {
+  animation: pulseGlow 2s infinite ease-in-out;
+}

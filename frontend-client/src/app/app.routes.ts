@@ -15,21 +15,32 @@ import { AllocateDocuments } from './components/doctor/allocate-documents/alloca
 import { guestGuard } from './core/guards/guest-guard';
 import { PatientMassage } from './components/patients/patient-massage/patient-massage';
 import { FollowupComponent } from './components/doctor/followup/followup';
+import { DocumentSign } from './components/doctor/document-sign/document-sign';
+import { Profile } from './components/structure/profile/profile';
+import { PatientRequest } from './components/patients/patient-request/patient-request';
+import { DoctorMassage } from './components/doctor/doctor-massage/doctor-massage';
+import { DoctorRequest } from './components/doctor/doctor-request/doctor-request';
 
 export const routes: Routes = [
   { path: '', component: Logging, canActivate: [guestGuard] },
   { path: 'register', component: Register },
+  { path: 'profile', component: Profile },
   { path: 'admin-dashboard', component: AdminHome, canActivate: [roleGuard], data: { roles: ['admin'] } },
   { path: 'doctor-dashboard', component: DoctorHome  , canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'add-patient', component: AddPatient, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'view-patient/:id', component: ViewPatient, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'exercises', component: Exercises, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'doctor-template', component: DoctorTemplate, canActivate: [roleGuard], data: { roles: ['doctor'] } },
+  { path: 'document-sign', component: DocumentSign, canActivate: [roleGuard], data: { roles: ['doctor'] } },
+  { path: 'doctor-massage', component: DoctorMassage, canActivate: [roleGuard], data: { roles: ['doctor'] } },
+  { path: 'doctor-request', component: DoctorRequest, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'allocate-template/:patientId', component: AllocateTemplate, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'allocate-exercise/:patientId', component: AllocateExercise, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'allocate-documents/:patientId', component: AllocateDocuments, canActivate: [roleGuard], data: { roles: ['doctor'] } },
   { path: 'patient-dashboard', component: PatientHome, canActivate: [roleGuard], data: { roles: ['patient'] } },
-   { path: 'patient-followups/:patientId', component: FollowupComponent, canActivate: [roleGuard], data: { roles: ['doctor'] } },
-   { path: 'patient-massage', component: PatientMassage, canActivate: [roleGuard], data: { roles: ['patient'] } },
+  { path: 'patient-followups/:patientId', component: FollowupComponent, canActivate: [roleGuard], data: { roles: ['doctor'] } },
+  { path: 'patient-massage', component: PatientMassage, canActivate: [roleGuard], data: { roles: ['patient'] } },
+  { path: 'patient-followups/:patientId', component: FollowupComponent, canActivate: [roleGuard], data: { roles: ['doctor'] } },
+  { path: 'patient-request', component: PatientRequest, canActivate: [roleGuard], data: { roles: ['patient'] } },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

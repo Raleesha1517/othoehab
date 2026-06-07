@@ -17,42 +17,43 @@
 
       <a *ngIf="isLoggedIn && role === 'admin'"
          routerLink="/admin-dashboard"
+         routerLinkActive="active-link"
          class="nav-link"
          (click)="isMobileMenuOpen = false">
         <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
         Admin Dashboard
       </a>
+
       <a *ngIf="isLoggedIn && role === 'doctor'"
          routerLink="/doctor-dashboard"
+         routerLinkActive="active-link"
          class="nav-link"
          (click)="isMobileMenuOpen = false">
         <i class="ti ti-stethoscope" aria-hidden="true"></i>
         Doctor Dashboard
       </a>
+
       <a *ngIf="isLoggedIn && role === 'hr'"
          routerLink="/hr-dashboard"
+         routerLinkActive="active-link"
          class="nav-link"
          (click)="isMobileMenuOpen = false">
         <i class="ti ti-users" aria-hidden="true"></i>
         HR Dashboard
       </a>
+
       <a *ngIf="isLoggedIn && role === 'patient'"
          routerLink="/patient-dashboard"
+         routerLinkActive="active-link"
          class="nav-link"
          (click)="isMobileMenuOpen = false">
         <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>
         Patient Dashboard
       </a>
-      <a *ngIf="isLoggedIn && role === 'patient'"
-         routerLink="/patient-massage"
-         class="nav-link"
-         (click)="isMobileMenuOpen = false">
-        <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>
-        Massage
-      </a>
 
       <a *ngIf="isLoggedIn && role === 'doctor'"
          routerLink="/exercises"
+         routerLinkActive="active-link"
          class="nav-link"
          (click)="isMobileMenuOpen = false">
         <i class="ti ti-barbell" aria-hidden="true"></i>
@@ -60,18 +61,50 @@
       </a>
 
       <a *ngIf="isLoggedIn && role === 'doctor'"
-          routerLink="/doctor-template"
-          routerLinkActive="active"
-          class="nav-link"
-          (click)="isMobileMenuOpen = false">
-          <i class="ti ti-file-description" aria-hidden="true"></i>
-          Templates
-        </a>
+         routerLink="/doctor-template"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-file-description" aria-hidden="true"></i>
+        Templates
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+        routerLink="/document-sign"
+        routerLinkActive="active-link"
+        class="nav-link"
+        (click)="isMobileMenuOpen = false">
+        <i class="ti ti-signature" aria-hidden="true"></i>
+        Sign
+        <span *ngIf="unsignedCount > 0" class="badge-unsigned-count">
+          {{ unsignedCount }}
+        </span>
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/doctor-request"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-git-pull-request" aria-hidden="true"></i>
+        Requests
+        <span *ngIf="pendingRequestsCount > 0" class="badge-unsigned-count" style="background-color: #f77f00;">
+          {{ pendingRequestsCount }}
+        </span>
+      </a>
+      <a *ngIf="isLoggedIn && role === 'patient'"
+         routerLink="/patient-request"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-git-pull-request" aria-hidden="true"></i>
+        Requests
+      </a>
     </div>
 
     <div class="nav-end">
       <ng-container *ngIf="isLoggedIn">
-        <div class="user-info">
+        <div class="user-info clickable-profile" (click)="navigateToProfile()">
           <div class="user-avatar">
             <i class="ti ti-user-circle" aria-hidden="true"></i>
           </div>
@@ -92,10 +125,161 @@
           <i class="ti ti-login" aria-hidden="true"></i>
           Login
         </a>
-        </ng-container>
-        <!-- <a routerLink="/register" class="nav-link" (click)="isMobileMenuOpen = false">Register</a> -->
+      </ng-container>
     </div>
   </div>
-
-
 </nav>
+
+
+
+<!-- <nav class="nav" [class.mobile-menu-active]="isMobileMenuOpen">
+  
+  <div class="nav-header">
+    <a [routerLink]="homeRoute" class="brand">
+      <img src="images/logo2.png" alt="Health Awareness Logo" class="logo"
+           style="height: 60px; width: 100px; object-fit: contain;" />
+    </a>
+
+    <button class="nav-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+      <i class="ti" [ngClass]="isMobileMenuOpen ? 'ti-x' : 'ti-menu-2'"></i>
+    </button>
+  </div>
+
+  <div class="nav-menu">
+    <div class="nav-start">
+      <div class="nav-sep hide-on-mobile"></div>
+
+      <a *ngIf="isLoggedIn && role === 'admin'"
+         routerLink="/admin-dashboard"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+        Admin Dashboard
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/doctor-dashboard"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-stethoscope" aria-hidden="true"></i>
+        Doctor Dashboard
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'hr'"
+         routerLink="/hr-dashboard"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-users" aria-hidden="true"></i>
+        HR Dashboard
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'patient'"
+         routerLink="/patient-dashboard"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>
+        Patient Dashboard
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'patient'"
+         routerLink="/patient-massage"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-message" aria-hidden="true"></i>
+        Massage
+      </a>
+
+     
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/exercises"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-barbell" aria-hidden="true"></i>
+        Exercises
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/doctor-template"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-file-description" aria-hidden="true"></i>
+        Templates
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+        routerLink="/document-sign"
+        routerLinkActive="active-link"
+        class="nav-link"
+        (click)="isMobileMenuOpen = false">
+        <i class="ti ti-signature" aria-hidden="true"></i>
+        Sign
+        <span *ngIf="unsignedCount > 0" class="badge-unsigned-count">
+          {{ unsignedCount }}
+        </span>
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/doctor-massage"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-message" aria-hidden="true"></i>
+        Massage
+      </a>
+
+      <a *ngIf="isLoggedIn && role === 'doctor'"
+         routerLink="/doctor-request"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-git-pull-request" aria-hidden="true"></i>
+        Requests
+        <span *ngIf="pendingRequestsCount > 0" class="badge-unsigned-count" style="background-color: #f77f00;">
+          {{ pendingRequestsCount }}
+        </span>
+      </a>
+      <a *ngIf="isLoggedIn && role === 'patient'"
+         routerLink="/patient-request"
+         routerLinkActive="active-link"
+         class="nav-link"
+         (click)="isMobileMenuOpen = false">
+        <i class="ti ti-git-pull-request" aria-hidden="true"></i>
+        Requests
+      </a>
+    </div>
+
+    <div class="nav-end">
+      <ng-container *ngIf="isLoggedIn">
+        <div class="user-info clickable-profile" (click)="navigateToProfile()">
+          <div class="user-avatar">
+            <i class="ti ti-user-circle" aria-hidden="true"></i>
+          </div>
+          <div class="user-meta">
+            <span class="user-name">{{ userName }}</span>
+            <span class="user-role">{{ role | uppercase }}</span>
+          </div>
+        </div>
+        <div class="nav-sep hide-on-mobile"></div>
+        <button class="btn-logout" (click)="logout(); isMobileMenuOpen = false">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          Sign Out
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="!isLoggedIn">
+        <a routerLink="/" class="btn-login-nav" (click)="isMobileMenuOpen = false">
+          <i class="ti ti-login" aria-hidden="true"></i>
+          Login
+        </a>
+      </ng-container>
+    </div>
+  </div>
+</nav> -->

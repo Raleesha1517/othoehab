@@ -13,7 +13,13 @@ export class PatientDocumentService {
 
   constructor(private http: HttpClient, private auth: Auth) {}
 
-  uploadDocument(patientId: number, file: File, category: string, otherDetails?: string): Observable<any> {
+  uploadDocument(
+    patientId: number, 
+    file: File, 
+    category: string, 
+    otherDetails?: string,
+    signedStatus?: string // <-- Added parameter here
+  ): Observable<any> {
     const formData = new FormData();
     formData.append('patient_id', patientId.toString());
     formData.append('file', file);
@@ -22,6 +28,9 @@ export class PatientDocumentService {
     if (otherDetails) {
       formData.append('other_category_detail', otherDetails);
     }
+
+    // Appends the signature value or falls back safely to 'not signed'
+    formData.append('signed_status', signedStatus || 'not signed');
 
     return this.http.post(this.apiUrl, formData, this.getHeaders());
   }
@@ -44,6 +53,15 @@ export class PatientDocumentService {
 
   deleteDocument(documentId: number): Observable<any> {
     return this.http.delete(`${this.baseDocUrl}/${documentId}`, this.getHeaders());
+  }
+
+  updateDocumentStatus(documentId: number, signedStatus: string, file?: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('signed_status', signedStatus);
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.post(`${this.baseDocUrl}/${documentId}/update-status?_method=PUT`, formData, this.getHeaders());
   }
 
   /**

@@ -18,6 +18,14 @@ export class DoctorHome implements OnInit {
   filteredPatients: any[] = [];
   searchTerm: string = '';
   showEditModal: boolean = false;
+  
+  // Interactive Clip Trace Configuration States
+  showFeedbackModal: boolean = false;
+  feedbackData: any = {
+    name: '',
+    code: '',
+    password: ''
+  };
 
   selectedPatient: any = {
     id: null,
@@ -29,7 +37,8 @@ export class DoctorHome implements OnInit {
     category: 'Surgery',
     other_category_detail: '',
     red_flags: '',
-    description: ''
+    description: '',
+    new_password: ''
   };
 
   constructor(
@@ -84,7 +93,8 @@ export class DoctorHome implements OnInit {
 
   // Edit Modal mapping initializer
   openEditModal(patient: any): void {
-    this.selectedPatient = { ...patient };
+    // Inject custom clean property mapping into deep spread trace copies
+    this.selectedPatient = { ...patient, new_password: '' };
     this.showEditModal = true;
     this.cdr.markForCheck();
   }
@@ -97,23 +107,43 @@ export class DoctorHome implements OnInit {
 
   // Update request compilation processing sequence
   submitUpdatePatient(): void {
-    this.patientService.updatePatient(this.selectedPatient.id, this.selectedPatient).subscribe({
-      next: () => {
+    // Generate payload containing either the clean textual string or fallback explicitly to null
+    const payload = {
+      ...this.selectedPatient,
+      patient_password: this.selectedPatient.new_password || null
+    };
+
+    this.patientService.updatePatient(this.selectedPatient.id, payload).subscribe({
+      next: (response: any) => {
+        const passwordWasUpdated = response.password_updated;
+        const freshPasswordString = this.selectedPatient.new_password;
+
         this.showEditModal = false;
         this.loadPatientRecords();
+
+        // Trigger dynamic overlay view if explicit mutations were made
+        if (passwordWasUpdated && freshPasswordString) {
+          this.feedbackData = {
+            name: this.selectedPatient.name,
+            code: this.selectedPatient.patient_code,
+            password: freshPasswordString
+          };
+          this.showFeedbackModal = true;
+        } else {
+          Swal.fire({
+            title: 'Updated!',
+            text: 'Patient medical file log modified successfully.',
+            icon: 'success',
+            confirmButtonColor: '#005f73'
+          });
+        }
         this.cdr.markForCheck();
-        Swal.fire({
-          title: 'Updated!',
-          text: 'Patient medical file log modified successfully.',
-          icon: 'success',
-          confirmButtonColor: '#005f73'
-        });
       },
       error: (err) => {
         this.cdr.markForCheck();
         Swal.fire({
           title: 'Error!',
-          text: 'Modification update sequence failure: ' + err.message,
+          text: 'Modification update sequence failure: ' + (err.error?.message || err.message),
           icon: 'error',
           confirmButtonColor: '#005f73'
         });
@@ -121,11 +151,39 @@ export class DoctorHome implements OnInit {
     });
   }
 
+  // Format custom layout text structure and send to navigator clipboard bounds
+  copyCredentialsToClipboard(): void {
+    const formattedMessage = 
+`Patient Account Update:
+Name: ${this.feedbackData.name}
+User Code: ${this.feedbackData.code}
+Password: ${this.feedbackData.password}`;
+
+    navigator.clipboard.writeText(formattedMessage).then(() => {
+      this.showFeedbackModal = false;
+      this.cdr.markForCheck();
+      
+      Swal.fire({
+        title: 'Copied!',
+        text: 'Credentials copied to clipboard and saved safely.',
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+    }).catch(err => {
+      console.error('System failed to execute copy process bounds:', err);
+      this.showFeedbackModal = false;
+      this.cdr.markForCheck();
+    });
+  }
+
   // Delete operation handler customized via SweetAlert2
   deletePatientRecord(id: number): void {
     Swal.fire({
       title: 'Are you absolutely sure?',
-      text: 'This operation will permanently purge this standalone patient clinical record trace file!',
+      text: 'This operation will permanently delete this standalone patient clinical record trace file!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',

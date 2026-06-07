@@ -1,0 +1,172 @@
+<div class="signature-workspace-container">
+  
+  <header class="workspace-header-node">
+    <div class="header-titles">
+      <h1>Signature Tracking Center</h1>
+      <p class="subtitle">Process unsigned patient letters, forms, and clinical assets system-wide</p>
+    </div>
+  </header>
+
+  <div class="workspace-scroller-content" *ngIf="!isLoading; else loadingState">
+    
+    <section class="records-card-section alert-card-border">
+      <div class="section-title-bar">
+        <div class="indicator-badge pending-bg"></div>
+        <h2>Awaiting Execution / Signature Verification</h2>
+      </div>
+      <p class="section-desc">Displays documents flagged as pending attention, ordered chronologically by submission date (oldest first).</p>
+
+      <div class="table-container-node" *ngIf="unsignedDocuments.length > 0; else emptyUnsigned">
+        <table class="workspace-billing-table">
+          <thead>
+            <tr>
+              <th>Patient Reference</th>
+              <th>Document Profile Name</th>
+              <th>Category Group</th>
+              <th>Submission Date</th>
+              <th>Tracking Context Notes</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of unsignedDocuments">
+              <td>
+                <div class="patient-meta">
+                  <strong>{{ doc.patientName }}</strong>
+                  <span class="sub-code">{{ doc.patientCode }}</span>
+                </div>
+              </td>
+              <td class="filename-cell"><i class="ti ti-file-text"></i> {{ doc.name }}</td>
+              <td><span class="cat-pill">{{ doc.category }}</span></td>
+              <td class="date-cell">{{ doc.created_at | date:'mediumDate' }} <small>{{ doc.created_at | date:'shortTime' }}</small></td>
+              <td class="desc-cell">{{ doc.description || 'No tracker context logs.' }}</td>
+              <td>
+                <div class="actions-flex-row">
+                  <button class="btn-action-view" (click)="downloadFile(doc)" title="Download Resource File">
+                    <i class="ti ti-download"></i> View
+                  </button>
+                  <button class="btn-action-edit" (click)="openEditModal(doc)">
+                    <i class="ti ti-edit"></i> Edit / Sign
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <ng-template #emptyUnsigned>
+        <div class="empty-state-node">
+          <i class="ti ti-circle-check-filled success-color"></i>
+          <p>Splendid! All patient records across your system are fully signed or processed.</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <section class="records-card-section history-card-border">
+      <div class="section-title-bar">
+        <div class="indicator-badge completed-bg"></div>
+        <h2>Processed System Documents Archives</h2>
+      </div>
+      
+      <div class="table-container-node" *ngIf="processedDocuments.length > 0; else emptyProcessed">
+        <table class="workspace-billing-table">
+          <thead>
+            <tr>
+              <th>Patient Reference</th>
+              <th>Document Profile Name</th>
+              <th>Category Group</th>
+              <th>Status Badge</th>
+              <th>Tracking Context Notes</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of processedDocuments">
+              <td>
+                <div class="patient-meta">
+                  <strong>{{ doc.patientName }}</strong>
+                  <span class="sub-code">{{ doc.patientCode }}</span>
+                </div>
+              </td>
+              <td class="filename-cell"><i class="ti ti-file-check"></i> {{ doc.name }}</td>
+              <td><span class="cat-pill gray-pill">{{ doc.category }}</span></td>
+              <td>
+                <span class="status-tag"
+                      [style.background]="doc.signed_status === 'signed' ? '#dcfce7' : '#f1f5f9'"
+                      [style.color]="doc.signed_status === 'signed' ? '#16a34a' : '#475569'">
+                  {{ doc.signed_status }}
+                </span>
+              </td>
+              <td class="desc-cell">{{ doc.description || 'No tracker context logs.' }}</td>
+              <td>
+                <div class="actions-flex-row">
+                  <button class="btn-action-view" (click)="downloadFile(doc)">
+                    <i class="ti ti-download"></i> Download
+                  </button>
+                  <button class="btn-action-edit btn-secondary-edit" (click)="openEditModal(doc)">
+                    <i class="ti ti-settings"></i> Revert State
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyProcessed>
+        <div class="empty-state-node">
+          <i class="ti ti-folder-off"></i>
+          <p>No processed historical logs recorded inside database logs yet.</p>
+        </div>
+      </ng-template>
+    </section>
+
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-spinner-wrapper">
+      <div class="spinner-core"></div>
+      <p>Parsing clinical storage registry elements...</p>
+    </div>
+  </ng-template>
+
+  <div class="modal-fixed-backdrop" *ngIf="showEditModal">
+    <div class="modal-card-surface">
+      <div class="modal-title-row">
+        <h3>Update Diagnostic Document Status</h3>
+        <button class="close-dismiss-x" (click)="closeEditModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body-wrapper">
+        <div class="meta-preview-box">
+          <p><strong>Document ID:</strong> {{ selectedDoc?.name }}</p>
+          <p><strong>Assigned Patient profile:</strong> {{ selectedDoc?.patientName }} ({{ selectedDoc?.patientCode }})</p>
+        </div>
+
+        <div class="form-input-block">
+          <label class="field-label-text">Modify Execution/Signature Status *</label>
+          <select [(ngModel)]="updatedStatus" class="form-select-node">
+            <option value="not signed">Not Signed (Return to Active Worklist)</option>
+            <option value="signed">Signed / Executed (Archive Record)</option>
+            <option value="no need signed">No Need Signed (Archive Record)</option>
+          </select>
+        </div>
+
+        <div class="form-input-block input-dashed-box">
+          <label class="field-label-text">Replace Underlying File Binary (Optional)</label>
+          <p class="input-instruction-text">Upload a new document version file if you want to replace previous storage tracks without overriding descriptions or core categories parameters.</p>
+          <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="file-binary-input" />
+        </div>
+      </div>
+
+      <div class="modal-footer-row">
+        <button type="button" class="btn-ui-flat" (click)="closeEditModal()" [disabled]="isSaving">Cancel</button>
+        <button type="button" class="btn-ui-commit" (click)="submitDocumentUpdates()" [disabled]="isSaving">
+          {{ isSaving ? 'Syncing Target Data Blocks...' : 'Save and Process Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

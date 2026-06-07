@@ -11,6 +11,7 @@
   </header>
 
   <div class="content-wrapper">
+    
     <section class="allocate-section">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
         <h2 style="margin: 0;">Allocated Medical Letters for this Patient</h2>
@@ -40,6 +41,7 @@
             <tr style="background:#f8fafc; text-align:left; border-bottom: 2px solid #e2e8f0;">
               <th style="padding:12px 16px; color:#475569; font-weight:600;">Document Name</th>
               <th style="padding:12px 16px; color:#475569; font-weight:600;">Tracking Notes / Context</th>
+              <th style="padding:12px 16px; color:#475569; font-weight:600;">Signature Status</th>
               <th style="padding:12px 16px; color:#475569; font-weight:600; text-align:center;">Actions</th>
             </tr>
           </thead>
@@ -47,6 +49,15 @@
             <tr *ngFor="let doc of filteredDocuments" style="border-bottom:1px solid #e2e8f0;">
               <td style="padding:14px 16px; font-weight:600; color:#0f172a;">{{ doc.name || 'Clinical Medical Letter Record' }}</td>
               <td style="padding:14px 16px; color:#64748b; font-size:0.9rem;">{{ doc.description || 'No contextual track description provided.' }}</td>
+              
+              <td style="padding:14px 16px;">
+                <span style="padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 500;"
+                      [style.background]="doc.signed_status === 'signed' ? '#dcfce7' : (doc.signed_status === 'no need signed' ? '#f1f5f9' : '#fee2e2')"
+                      [style.color]="doc.signed_status === 'signed' ? '#16a34a' : (doc.signed_status === 'no need signed' ? '#475569' : '#dc2626')">
+                  {{ doc.signed_status || 'not signed' }}
+                </span>
+              </td>
+
               <td style="padding:14px 16px; text-align:center; display: flex; justify-content: center; gap: 8px; align-items: center;">
                 <button class="btn-download" (click)="downloadPatientFile(doc)" style="display:inline-flex; border:1px solid #cbd5e1; padding:6px 12px; border-radius:6px; background:#fff; font-size:0.85rem; align-items:center; gap:6px; cursor:pointer; color:#334155;">
                   <i class="ti ti-download"></i> Get File
@@ -112,7 +123,7 @@
         </div>
       </div>
 
-      <div *ngIf="selectedTemplate" class="allocate-actions">
+      <div style="margin-top: 1.5rem;" *ngIf="selectedTemplate" class="allocate-actions">
         <button class="action-btn-primary" (click)="allocateTemplate()" [disabled]="isAllocating">
           <i class="ti ti-check-circle"></i>
           {{ isAllocating ? 'Allocating Medical Letter Structure...' : 'Allocate Selected Medical Letter to Patient' }}
@@ -127,6 +138,7 @@
         <h3>Upload Medical Letter Document to Patient Records</h3>
         <button class="modal-close-x" (click)="closeTemplateUploadModal()">&times;</button>
       </div>
+      
       <form (ngSubmit)="uploadTemplateFile()" class="modal-scroller-body">
         <div class="input-form-control">
           <label>Document Title / Name *</label>
@@ -136,6 +148,15 @@
         <div class="input-form-control">
           <label>Select Document File * (.pdf, .doc, .docx)</label>
           <input type="file" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" class="form-field-input" required />
+        </div>
+
+        <div class="input-form-control">
+          <label>Signature Status *</label>
+          <select [(ngModel)]="uploadSignedStatus" name="uploadSignedStatus" class="form-field-input" required>
+            <option value="not signed">Not Signed</option>
+            <option value="signed">Signed</option>
+            <option value="no need signed">No Need Signed</option>
+          </select>
         </div>
 
         <div class="input-form-control">

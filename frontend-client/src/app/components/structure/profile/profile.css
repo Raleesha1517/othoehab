@@ -1,0 +1,439 @@
+/* ==========================================================================
+   Profile Module Base Shell Containers
+   ========================================================================== */
+.profile-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+}
+
+/* ==========================================================================
+   Header Profiling Element Strip Configuration
+   ========================================================================== */
+.profile-header-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.user-avatar-badge {
+  font-size: 4rem;
+  color: #cbd5e1;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.user-title-block h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.user-code-tag {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+/* Dynamic Administrative & Patient Role Pills */
+.role-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+}
+
+.role-pill.doctor  { background-color: #e0f2fe; color: #0369a1; }
+.role-pill.admin   { background-color: #fee2e2; color: #991b1b; }
+.role-pill.patient { background-color: #dcfce7; color: #166534; }
+.role-pill.hr      { background-color: #f3e8ff; color: #6b21a8; }
+
+.btn-register-trigger {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-register-trigger:hover { 
+  background-color: #1e293b; 
+}
+
+/* ==========================================================================
+   Dynamic Form Input Grid Structural Layout
+   ========================================================================== */
+.form-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field.long-row {
+  grid-column: span 2;
+}
+
+.form-field label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-container i {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #334155;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input-container input[readonly] {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.input-container input:focus:not([readonly]) {
+  outline: none;
+  border-color: #005f73;
+  box-shadow: 0 0 0 3px rgba(0, 95, 115, 0.15);
+}
+
+/* Centered Password Toggle Control Hook */
+.password-field-wrapper .password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* ==========================================================================
+   Action Footer Button Alignment Layout Rules
+   ========================================================================== */
+.profile-action-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-action-primary {
+  background-color: #005f73;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.15s ease;
+}
+
+.btn-action-primary:disabled { 
+  opacity: 0.6; 
+  cursor: not-allowed; 
+}
+
+.btn-action-secondary {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.65rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Registry Database Grid Tables Styling
+   ========================================================================== */
+.doctors-list-section {
+  margin-top: 1rem;
+}
+
+.section-title-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #005f73;
+  margin-bottom: 1.25rem;
+}
+
+.section-title-header h3 { 
+  margin: 0; 
+  font-size: 1.2rem; 
+  font-weight: 700; 
+}
+
+.table-scroller-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.doctors-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.doctors-grid-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.doctors-grid-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.doctors-grid-table tr:hover td { 
+  background-color: #f8fafc; 
+}
+
+.bold-code { 
+  font-family: monospace; 
+  font-weight: 700; 
+  color: #0f172a; 
+}
+
+.empty-table-prompt { 
+  text-align: center; 
+  color: #94a3b8; 
+  padding: 2rem !important; 
+}
+
+/* ==========================================================================
+   Modal Elements Dialog Overlay Layer Maps (FIXED STRUCTURE FOR SCROLLING)
+   ========================================================================== */
+.modal-overlay-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-surface-container {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* CRITICAL FIX: Forces the form to respect flex restrictions instead of extending outside the layout */
+.modal-surface-container form {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.modal-header-container {
+  padding: 1.25rem 1.5rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0; /* Prevents the header from getting squished when scrolling */
+}
+
+.modal-header-container h3 { 
+  margin: 0; 
+  color: #005f73; 
+  font-size: 1.15rem; 
+  font-weight: 700; 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+}
+
+.modal-close-x { 
+  background: none; 
+  border: none; 
+  font-size: 1.5rem; 
+  color: #94a3b8; 
+  cursor: pointer; 
+}
+
+.modal-scroller-body { 
+  padding: 1.5rem; 
+  overflow-y: auto; 
+  display: flex;
+  flex-direction: column; 
+  gap: 1rem; 
+  box-sizing: border-box;
+  flex-grow: 1; /* Maximizes the body layout space inside the view dimensions */
+}
+
+.input-form-control { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.4rem; 
+}
+
+.input-form-control label { 
+  font-weight: 600; 
+  color: #475569; 
+  font-size: 0.85rem; 
+}
+
+.form-field-input { 
+  padding: 0.6rem 0.85rem; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 6px; 
+  font-size: 0.95rem; 
+  box-sizing: border-box; 
+}
+
+.grid-two-column { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 1rem; 
+}
+
+.modal-footer-action-row { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 0.75rem; 
+  padding-top: 1rem; 
+  border-top: 1px solid #e2e8f0; 
+  margin-top: 0.5rem; 
+  flex-shrink: 0; /* Keeps footer pinned to the bottom of the modal panel */
+}
+
+.btn-cancel-flat { 
+  background: none; 
+  border: 1px solid #cbd5e1; 
+  padding: 0.65rem 1.25rem; 
+  border-radius: 6px; 
+  font-weight: 600; 
+  color: #475569; 
+  cursor: pointer; 
+}
+
+.action-btn-primary { 
+  background-color: #005f73; 
+  color: #ffffff; 
+  border: none; 
+  padding: 0.65rem 1.5rem; 
+  border-radius: 6px; 
+  font-weight: 600; 
+  cursor: pointer; 
+}
+
+.action-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Responsive View Break Rule Adaptions (Mobile & Tablet Adjustments)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .form-grid-layout { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .form-field.long-row { 
+    grid-column: span 1; 
+  }
+  
+  .profile-header-strip { 
+    flex-direction: column; 
+    text-align: center; 
+    align-items: center;
+    justify-content: center; 
+    gap: 1.25rem;
+  }
+
+  /* Fixed registration trigger button to drop down completely below title maps */
+  .profile-header-strip .btn-register-trigger { 
+    margin-left: 0;
+    width: 100%; 
+    justify-content: center; 
+    order: 3;
+  }
+  
+  .grid-two-column { 
+    grid-template-columns: 1fr; 
+  }
+}
