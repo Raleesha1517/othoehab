@@ -17,6 +17,12 @@
             {{ closestFollowupDate ? (closestFollowupDate | date:'longDate') : ui[currentLang].noFollowup }}
           </strong>
         </div>
+        <button class="contact-trigger-badge-btn" 
+                *ngIf="isContactVisible" 
+                (click)="openContactDetailsAlert()">
+          <i class="ti ti-phone-calling animate-pulse"></i> 
+          <span>{{ ui[currentLang].contactInfoBtn }}</span>
+        </button>
       </div>
     </div>
     

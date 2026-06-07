@@ -1,0 +1,105 @@
+<div class="doctor-workspace-container">
+  <header class="workspace-header-node">
+    <div class="header-titles">
+      <h1>Patient Requests Dashboard</h1>
+      <p class="subtitle">Review, process medical certificates, clinical reports, and official documentation requests.</p>
+    </div>
+  </header>
+
+  <div class="workspace-scroller-content" *ngIf="!isLoading; else loadingState">
+    <section class="records-card-section">
+      <div class="table-container-node" *ngIf="allRequests.length > 0; else emptyWorkspace">
+        <table class="workspace-billing-table">
+          <thead>
+            <tr>
+              <th>Patient Information</th>
+              <th>Document Category</th>
+              <th>Patient Reason / Description</th>
+              <th>Status</th>
+              <th>Doctor's Response Note</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let req of allRequests">
+              <td>
+                <div class="patient-meta">
+                  <strong>{{ req.patient?.name }}</strong>
+                  <span class="sub-code">{{ req.patient?.patient_code }}</span>
+                </div>
+              </td>
+              <td><span class="cat-pill">{{ req.title }}</span></td>
+              <td class="desc-cell">{{ req.description }}</td>
+              <td>
+                <span class="status-tag" [ngClass]="getStatusBadgeClass(req.status)">
+                  {{ req.status | uppercase }}
+                </span>
+              </td>
+              <td class="reply-cell">{{ req.reply || 'Awaiting clinical review...' }}</td>
+              <td>
+                <div class="actions-flex-row">
+                  <button class="btn-action-edit" (click)="openEvaluateModal(req)">
+                    <i class="ti ti-edit"></i> Process Request
+                  </button>
+                  <button class="btn-action-delete" (click)="onDeleteRequest(req.id)">
+                    <i class="ti ti-trash"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyWorkspace>
+        <div class="empty-state-node">
+          <p>No pending patient document requests found.</p>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-spinner-wrapper">
+      <p>Loading medical records dashboard...</p>
+    </div>
+  </ng-template>
+
+  <div class="modal-fixed-backdrop" *ngIf="showEvaluateModal">
+    <div class="modal-card-surface">
+      <div class="modal-title-row">
+        <h3>Evaluate Patient Request</h3>
+        <button class="close-dismiss-x" (click)="closeEvaluateModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body-wrapper">
+        <div class="meta-preview-box">
+          <p><strong>Patient Name:</strong> {{ selectedRequest?.patient?.name }}</p>
+          <p><strong>Requested Item:</strong> {{ selectedRequest?.title }}</p>
+          <p><strong>Clinical Reason:</strong> {{ selectedRequest?.description }}</p>
+        </div>
+
+        <div class="form-input-block">
+          <label class="field-label-text">Clinical Decision *</label>
+          <select [(ngModel)]="updatedStatus" class="form-select-node">
+            <option value="pending">Awaiting Review</option>
+            <option value="approved">Approve / Authorize Document</option>
+            <option value="not approved">Decline Request</option>
+          </select>
+        </div>
+
+        <div class="form-input-block">
+          <label class="field-label-text">Medical Officer Remarks / Instructions</label>
+          <textarea [(ngModel)]="doctorReplyText" class="form-textarea-node" placeholder="Add tracking reference keys, dynamic follow-up clinic dates, or specific approval terms here..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer-row">
+        <button type="button" class="btn-ui-flat" (click)="closeEvaluateModal()" [disabled]="isSaving">Cancel</button>
+        <button type="button" class="btn-ui-commit" (click)="submitDoctorResolution()" [disabled]="isSaving">
+          {{ isSaving ? 'Saving changes...' : 'Save Decision' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

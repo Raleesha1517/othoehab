@@ -26,9 +26,19 @@ class Patient extends Model
                     ->withTimestamps();
     }
 
+    public function contactSetting()
+    {
+        return $this->hasOne(PatientContactSetting::class, 'patient_id');
+    }
+
     public function documents()
     {
         return $this->hasMany(PatientDocument::class);
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(PatientRequest::class, 'patient_id')->latest();
     }
 
     public function templates()

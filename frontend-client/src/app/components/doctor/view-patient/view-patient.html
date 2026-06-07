@@ -118,54 +118,144 @@
           </div>
         </section>
 
-        <section class="info-section resource-section">
-  <div class="section-header-with-action">
-    <h3 class="section-title"><i class="ti ti-fitness"></i> Allocated Exercises</h3>
-    <button class="btn-allocate" (click)="goToAllocateExercises()">
-      <i class="ti ti-plus"></i> Allocate Exercise
+        <section class="info-section contact-sharing-section" style="border-top: 1px solid #e2e8f0; padding-top: 24px; margin-top: 24px;">
+  <div class="section-header-with-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h3 class="section-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+      <i class="ti ti-address-book" style="font-size: 20px; color: #005f73;"></i> Dedicated Patient Contact View Data
+    </h3>
+    <button *ngIf="!contactSettings" class="btn-allocate" (click)="initializeContactForm()" style="background-color: #005f73; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+      <i class="ti ti-plus"></i> Give Contact Details to Patient
     </button>
   </div>
-  
-  <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
-    <div *ngFor="let exercise of exercises" class="resource-item" [ngClass]="{'item-hidden': !exercise.isVisible}">
-      <div class="resource-header">
-        <div class="title-with-toggle">
-          <h4>{{ exercise.title }}</h4>
-          <span class="attachment-count">{{ exercise.attachments?.length || 0 }} attachment(s)</span>
-        </div>
-        
-        <div class="visibility-toggle-action">
-          <label class="switch-toggle-node">
-            <input type="checkbox" [checked]="exercise.isVisible" (change)="toggleVisibility(exercise, 'exercise')">
-            <span class="slider-toggle-round"></span>
-          </label>
-          <span class="toggle-status-label">{{ exercise.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
 
-          <button class="btn-delete-resource-allocation" 
-                  (click)="removeAllocatedExercise(exercise.id)" 
-                  title="Remove Allocation from Patient">
-            <i class="ti ti-trash"></i>
+  <div *ngIf="contactLoading" style="padding: 12px; color: #64748b;">
+    <p><i class="ti ti-refresh rotation-spinner"></i> Syncing contact records...</p>
+  </div>
+
+  <div *ngIf="!contactLoading && contactSettings" class="contact-settings-wrapper" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px;">
+    
+    <div class="contact-visibility-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 13px; font-weight: 600; color: #334155;">Patient View Accessibility Control</span>
+        <p style="font-size: 11px; color: #64748b; margin: 0;">Configure if these records are visible inside the patient application portal dashboard.</p>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <label class="switch-toggle-node" style="position: relative; display: inline-block; width: 42px; height: 24px;">
+          <input type="checkbox" [checked]="contactSettings.is_visible" (change)="toggleContactVisibility()" style="opacity: 0; width: 0; height: 0;">
+          <span class="slider-toggle-round" [style.background-color]="contactSettings.is_visible ? '#2e7d32' : '#cbd5e1'" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; transition: .3s; border-radius: 24px;"></span>
+        </label>
+        <span class="toggle-status-label" [style.color]="contactSettings.is_visible ? '#2e7d32' : '#64748b'" style="font-size: 12px; font-weight: 600;">
+          {{ contactSettings.is_visible ? 'Visible to Patient' : 'Hidden from Patient' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="contact-fields-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+      
+      <div class="form-item-wrapper">
+        <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Shared Communication Email</label>
+        <div *ngIf="!isContactEditing" style="font-size: 14px; color: #1e293b; padding: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; font-weight: 500;">
+          {{ contactSettings.email || 'No email shared with patient yet.' }}
+        </div>
+        <input *ngIf="isContactEditing" type="email" class="edit-input-field" [(ngModel)]="contactFormCache.email" style="width: 100%; box-sizing: border-box;" placeholder="e.g. contact@orthorehab.com">
+      </div>
+
+      <div class="form-item-wrapper">
+        <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px;">Shared Telephone Number(s)</label>
+        
+        <div *ngIf="!isContactEditing" style="display: flex; flex-direction: column; gap: 6px;">
+          <div *ngFor="let phone of contactSettings.telephones" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 13px;">
+            <span style="font-weight: 600; color: #1e293b;"><i class="ti ti-phone" style="color: #64748b;"></i> {{ phone.telephone_number }}</span>
+            <span *ngIf="phone.is_primary" style="background: #e0f2fe; color: #0369a1; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Primary</span>
+          </div>
+        </div>
+
+        <div *ngIf="isContactEditing" style="display: flex; flex-direction: column; gap: 8px;">
+          <div *ngFor="let phone of contactFormCache.telephones; let idx = index; let last = last" style="display: flex; gap: 6px; align-items: center;">
+            <input type="text" class="edit-input-field" [(ngModel)]="phone.telephone_number" style="flex: 1;" placeholder="Phone lines layout">
+            
+            <button type="button" (click)="setPrimaryPhone(idx)" [style.background]="phone.is_primary ? '#e0f2fe' : '#f1f5f9'" [style.color]="phone.is_primary ? '#0369a1' : '#64748b'" style="border: 1px solid #cbd5e1; padding: 6px; border-radius: 4px; cursor: pointer;" title="Set as primary number">
+              <i class="ti" [ngClass]="phone.is_primary ? 'ti-star-filled' : 'ti-star'"></i>
+            </button>
+
+            <button type="button" (click)="removePhoneRow(idx)" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 6px; border-radius: 4px; cursor: pointer;" [disabled]="contactFormCache.telephones.length === 1">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>
+          
+          <button type="button" (click)="addPhoneRow()" style="background: #ffffff; border: 1px dashed #cbd5e1; color: #005f73; padding: 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; text-align: center; display: inline-block; margin-top: 4px;">
+            <i class="ti ti-plus"></i> Add Additional Phone Number
           </button>
         </div>
       </div>
-      
-      <div class="toggleable-resource-content">
-        <p class="resource-description">{{ exercise.description || 'No description' }}</p>
-        <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
-          <div *ngFor="let att of exercise.attachments" class="attachment-item-mini interactive-view-node" (click)="viewAttachment(att)" title="Click to View Document">
-            <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
-            <span class="att-label">{{ att.label }}</span>
-            <i class="ti ti-eye view-indicator-icon"></i>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-  
-  <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
-    <p>No exercises allocated yet. Click "Allocate Exercise" to add.</p>
+
+    <div class="contact-actions-row" style="display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
+      <button *ngIf="!isContactEditing" class="action-btn edit-btn" (click)="startContactEditing()" style="margin: 0; padding: 6px 12px; font-size: 12px;">
+        <i class="ti ti-edit"></i> Modify Contacts
+      </button>
+      <button *ngIf="isContactEditing" class="action-btn cancel-btn" (click)="cancelContactEditing()" style="margin: 0; padding: 6px 12px; font-size: 12px;">
+        <i class="ti ti-x"></i> Cancel
+      </button>
+      <button *ngIf="isContactEditing" class="action-btn save-btn" (click)="submitContactSettings()" style="margin: 0; padding: 6px 12px; font-size: 12px;">
+        <i class="ti ti-check"></i> Save Data Structure
+      </button>
+    </div>
+
   </div>
 </section>
+
+        <section class="info-section resource-section">
+          <div class="section-header-with-action">
+            <h3 class="section-title"><i class="ti ti-fitness"></i> Allocated Exercises</h3>
+            <button class="btn-allocate" (click)="goToAllocateExercises()">
+              <i class="ti ti-plus"></i> Allocate Exercise
+            </button>
+          </div>
+          
+          <div *ngIf="!resourcesLoading && exercises.length > 0" class="resource-list">
+            <div *ngFor="let exercise of exercises" class="resource-item" [ngClass]="{'item-hidden': !exercise.isVisible}">
+              <div class="resource-header">
+                <div class="title-with-toggle">
+                  <h4>{{ exercise.title }}</h4>
+                  <span class="attachment-count">{{ exercise.attachments?.length || 0 }} attachment(s)</span>
+                </div>
+                
+                <div class="visibility-toggle-action">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <label class="switch-toggle-node">
+                      <input type="checkbox" [checked]="exercise.isVisible" (change)="toggleVisibility(exercise, 'exercise')">
+                      <span class="slider-toggle-round"></span>
+                    </label>
+                    <span class="toggle-status-label">{{ exercise.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
+                  </div>
+
+                  <button class="btn-delete-resource-allocation" 
+                          (click)="removeAllocatedExercise(exercise.id)" 
+                          title="Remove Allocation from Patient">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="toggleable-resource-content">
+                <p class="resource-description">{{ exercise.description || 'No description' }}</p>
+                <div *ngIf="exercise.attachments && exercise.attachments.length > 0" class="attachments-list">
+                  <div *ngFor="let att of exercise.attachments" class="attachment-item-mini interactive-view-node" (click)="viewAttachment(att)" title="Click to View Document">
+                    <span class="att-type" [ngClass]="'type-' + att.type">{{ att.type | uppercase }}</span>
+                    <span class="att-label">{{ att.label }}</span>
+                    <i class="ti ti-eye view-indicator-icon"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="!resourcesLoading && exercises.length === 0" class="empty-resource">
+            <p>No exercises allocated yet. Click "Allocate Exercise" to add.</p>
+          </div>
+        </section>
 
         <section class="info-section resource-section medical-records-border">
           <div class="section-header-with-action">
@@ -177,18 +267,32 @@
           
           <div *ngIf="!resourcesLoading && medicalRecords.length > 0" class="resource-list">
             <div *ngFor="let doc of medicalRecords" class="resource-item" [ngClass]="{'item-hidden': !doc.isVisible}">
-              <div class="resource-header">
+              <div class="resource-header" style="align-items: flex-start;">
                 <div class="title-with-toggle">
                   <h4>{{ doc.original_filename || doc.name }}</h4>
                   <span class="category-badge">{{ doc.category }}</span>
                 </div>
                 
-                <div class="visibility-toggle-action">
-                  <label class="switch-toggle-node">
-                    <input type="checkbox" [checked]="doc.isVisible" (change)="toggleVisibility(doc, 'document')">
-                    <span class="slider-toggle-round"></span>
-                  </label>
-                  <span class="toggle-status-label">{{ doc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
+                <div class="visibility-toggle-action" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                  <div class="toggle-action-row" style="display: flex; align-items: center; gap: 8px;">
+                    <label class="switch-toggle-node">
+                      <input type="checkbox" [checked]="doc.isVisible" (change)="toggleVisibility(doc, 'document')">
+                      <span class="slider-toggle-round"></span>
+                    </label>
+                    <span class="toggle-status-label">{{ doc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
+                  </div>
+
+                  <div class="signature-status-container" style="width: 100%; display: flex; justify-content: flex-end;">
+                    <span class="signature-status-badge" 
+                          style="padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #ffffff; display: inline-flex; align-items: center; gap: 6px;"
+                          [ngStyle]="{
+                            'background-color': doc.signed_status === 'signed' ? '#2e7d32' : 
+                                                doc.signed_status === 'no need signed' ? '#1565c0' : '#c62828'
+                          }">
+                      <i class="ti" [ngClass]="doc.signed_status === 'signed' ? 'ti-circle-check' : doc.signed_status === 'no need signed' ? 'ti-circle-minus' : 'ti-alert-circle'"></i>
+                      {{ doc.signed_status === 'signed' ? 'Signed' : doc.signed_status === 'no need signed' ? 'No Need to Sign' : 'Not Signed' }}
+                    </span>
+                  </div>
                 </div>
               </div>
               
@@ -221,18 +325,32 @@
           
           <div *ngIf="!resourcesLoading && medicalLetters.length > 0" class="resource-list">
             <div *ngFor="let templateDoc of medicalLetters" class="resource-item" [ngClass]="{'item-hidden': !templateDoc.isVisible}">
-              <div class="resource-header">
+              <div class="resource-header" style="align-items: flex-start;">
                 <div class="title-with-toggle">
                   <h4>{{ templateDoc.original_filename || templateDoc.name }}</h4>
                   <span class="category-badge letter-badge-style">{{ templateDoc.category }}</span>
                 </div>
                 
-                <div class="visibility-toggle-action">
-                  <label class="switch-toggle-node">
-                    <input type="checkbox" [checked]="templateDoc.isVisible" (change)="toggleVisibility(templateDoc, 'document')">
-                    <span class="slider-toggle-round"></span>
-                  </label>
-                  <span class="toggle-status-label">{{ templateDoc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
+                <div class="visibility-toggle-action" style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                  <div class="toggle-action-row" style="display: flex; align-items: center; gap: 8px;">
+                    <label class="switch-toggle-node">
+                      <input type="checkbox" [checked]="templateDoc.isVisible" (change)="toggleVisibility(templateDoc, 'document')">
+                      <span class="slider-toggle-round"></span>
+                    </label>
+                    <span class="toggle-status-label">{{ templateDoc.isVisible ? 'Visible to Patient' : 'Hidden from Patient' }}</span>
+                  </div>
+
+                  <div class="signature-status-container" style="width: 100%; display: flex; justify-content: flex-end;">
+                    <span class="signature-status-badge" 
+                          style="padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #ffffff; display: inline-flex; align-items: center; gap: 6px;"
+                          [ngStyle]="{
+                            'background-color': templateDoc.signed_status === 'signed' ? '#2e7d32' : 
+                                                templateDoc.signed_status === 'no need signed' ? '#1565c0' : '#c62828'
+                          }">
+                      <i class="ti" [ngClass]="templateDoc.signed_status === 'signed' ? 'ti-signature' : templateDoc.signed_status === 'no need signed' ? 'ti-circle-minus' : 'ti-alert-circle'"></i>
+                      {{ templateDoc.signed_status === 'signed' ? 'Signed' : templateDoc.signed_status === 'no need signed' ? 'No Need to Sign' : 'Not Signed' }}
+                    </span>
+                  </div>
                 </div>
               </div>
               

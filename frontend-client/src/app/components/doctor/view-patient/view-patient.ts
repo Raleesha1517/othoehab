@@ -7,6 +7,7 @@ import { Patient } from '../../../core/services/patient';
 import { Exercise } from '../../../core/services/exercise';
 import { PatientDocumentService } from '../../../core/services/patient-document';
 import { FollowupService, Followup } from '../../../core/services/followup'; 
+import { Contact, PatientContactSetting } from '../../../core/services/contact'; // 🌟 Added Contact Service + Interface Imports
 import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
@@ -52,11 +53,22 @@ export class ViewPatient implements OnInit {
   activePdfUrl: SafeResourceUrl | null = null;
   activePdfTitle = '';
 
+  // 🌟 NEW PROPERTIES: Sub-module contact feature states
+  contactSettings: PatientContactSetting | null = null;
+  contactLoading = true;
+  isContactEditing = false;
+  contactFormCache: any = {
+    email: '',
+    is_visible: false,
+    telephones: []
+  };
+
   constructor(
     private patientService: Patient,
     private exerciseService: Exercise,
     private documentService: PatientDocumentService,
     private followupService: FollowupService, 
+    private contactService: Contact, // 🌟 Injected Contact Service Instance
     private route: ActivatedRoute,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -70,14 +82,17 @@ export class ViewPatient implements OnInit {
         // Reset loading flags on parameter resolution reset
         this.isLoading = true;
         this.resourcesLoading = true;
+        this.contactLoading = true; 
         this.cdr.markForCheck();
 
         this.loadPatientDetails();
         this.loadPatientResources();
         this.calculateClosestFollowupDates(); 
+        this.loadPatientContactInformation(); // 🌟 Trigger contact details data load
       } else {
         this.isLoading = false;
         this.resourcesLoading = false;
+        this.contactLoading = false;
         this.cdr.markForCheck();
       }
     });
@@ -106,8 +121,6 @@ export class ViewPatient implements OnInit {
       }
     });
   }
-
-  // Add this method inside your ViewPatient class component in view-patient.component.ts
 
   removeAllocatedExercise(exerciseId: number): void {
     if (!this.patientId) return;
@@ -170,7 +183,6 @@ export class ViewPatient implements OnInit {
         const collection = (Array.isArray(followups) ? followups : Object.values(followups || {})) as Followup[];
 
         collection.forEach(item => {
-          // TypeScript now knows 'item' is a Followup object and allows property access safely
           if (item.followup_date) {
             const fDate = new Date(item.followup_date);
             if (fDate <= today) {
@@ -213,7 +225,6 @@ export class ViewPatient implements OnInit {
   }
 
   cancelEditing(): void {
-    // Correct tracking variables cleanly
     this.isEditing = false;
     this.cdr.markForCheck();
   }
@@ -416,10 +427,136 @@ export class ViewPatient implements OnInit {
     });
   }
 
-  goToFollowups(): void {
-    if (this.patientId) this.router.navigate(['/patient-followups', this.patientId]);
+  // ==========================================
+  // 🌟 PATIENT CONTACT METHODS SUB-MODULE
+  // ==========================================
+
+  loadPatientContactInformation(): void {
+    if (!this.patientId) return;
+
+    this.contactLoading = true;
+    this.cdr.markForCheck();
+
+    this.contactService.getContactSettings(this.patientId).subscribe({
+      next: (settings: PatientContactSetting) => {
+        this.contactSettings = settings;
+        this.contactLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.warn('No contact dataset found for this patient yet.', err);
+        this.contactSettings = null;
+        this.contactLoading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
+  initializeContactForm(): void {
+    // Falls back seamlessly to core patient records if available, starts at visibility status 0 (false)
+    this.contactSettings = {
+      patient_id: this.patientId!,
+      email: this.patientDetails?.email || '',
+      is_visible: false,
+      telephones: [{ telephone_number: this.patientDetails?.phone || '', is_primary: true }]
+    };
+    this.startContactEditing();
+  }
+
+  startContactEditing(): void {
+    if (!this.contactSettings) return;
+    
+    // Create deep snapshot copy for isolated data updates
+    this.contactFormCache = JSON.parse(JSON.stringify(this.contactSettings));
+    this.isContactEditing = true;
+    this.cdr.markForCheck();
+  }
+
+  cancelContactEditing(): void {
+    this.isContactEditing = false;
+    // Discard setup object if it has not yet been assigned a database index primary id key
+    if (this.contactSettings && !this.contactSettings.id) {
+      this.contactSettings = null;
+    }
+    this.cdr.markForCheck();
+  }
+
+  addPhoneRow(): void {
+    this.contactFormCache.telephones.push({ telephone_number: '', is_primary: false });
+    this.cdr.markForCheck();
+  }
+
+  removePhoneRow(index: number): void {
+    if (this.contactFormCache.telephones.length <= 1) return;
+    
+    const contextWasPrimary = this.contactFormCache.telephones[index].is_primary;
+    this.contactFormCache.telephones.splice(index, 1);
+    
+    // Safety shift: default to fallback element row zero if primary line row is targeted for removal
+    if (contextWasPrimary && this.contactFormCache.telephones.length > 0) {
+      this.contactFormCache.telephones[0].is_primary = true;
+    }
+    this.cdr.markForCheck();
+  }
+
+  setPrimaryPhone(selectedIndex: number): void {
+    this.contactFormCache.telephones.forEach((phone: any, idx: number) => {
+      phone.is_primary = idx === selectedIndex;
+    });
+    this.cdr.markForCheck();
+  }
+
+  submitContactSettings(): void {
+    if (!this.patientId) return;
+
+    const entriesAreValid = this.contactFormCache.telephones.every((p: any) => p.telephone_number && p.telephone_number.trim() !== '');
+    if (!entriesAreValid) {
+      Swal.fire({ icon: 'error', title: 'Validation Alert', text: 'Phone inputs cannot be left completely blank.' });
+      return;
+    }
+
+    this.contactLoading = true;
+    this.cdr.markForCheck();
+
+    this.contactService.saveContactSettings(this.patientId, this.contactFormCache).subscribe({
+      next: (response: any) => {
+        // Handle variations between direct mapping payload arrays or internal response packaging formats cleanly
+        this.contactSettings = response.data || response;
+        this.isContactEditing = false;
+        this.contactLoading = false;
+        this.cdr.markForCheck();
+
+        Swal.fire({ icon: 'success', title: 'Saved!', text: 'Patient contact record options synced successfully.', timer: 1500, showConfirmButton: false });
+      },
+      error: (err) => {
+        console.error('Failed processing contact transaction operations:', err);
+        this.contactLoading = false;
+        this.cdr.markForCheck();
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Server rejected modifications: ' + (err.error?.message || err.message) });
+      }
+    });
+  }
+
+  toggleContactVisibility(): void {
+    if (!this.patientId || !this.contactSettings) return;
+
+    const targetedNextState = !this.contactSettings.is_visible;
+    
+    this.contactService.toggleVisibility(this.patientId, targetedNextState).subscribe({
+      next: (response: any) => {
+        // Update direct view property layer tracking with normalized response outputs
+        this.contactSettings!.is_visible = response.is_visible !== undefined ? response.is_visible : targetedNextState;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed processing patch visibility rule operations:', err);
+        this.displayToggleError();
+      }
+    });
+  }
+
+  // Routing and Navigation Link Targets
+  goToFollowups(): void { if (this.patientId) this.router.navigate(['/patient-followups', this.patientId]); }
   goToAllocateExercises(): void { if (this.patientId) this.router.navigate(['/allocate-exercise', this.patientId]); }
   goToAllocateTemplates(): void { if (this.patientId) this.router.navigate(['/allocate-template', this.patientId]); }
   goToAllocateDocuments(): void { if (this.patientId) this.router.navigate(['/allocate-documents', this.patientId]); }

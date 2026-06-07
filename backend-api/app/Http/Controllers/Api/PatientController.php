@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; // 🧠 Missing Import 1: Resolves password hashing crashes
+use Illuminate\Support\Facades\Hash;
 use App\Models\Patient;
 
 class PatientController extends Controller
@@ -25,14 +25,13 @@ class PatientController extends Controller
             'age' => 'nullable|integer',
         ]);
 
-        // ALGORITHM: 2 letters from Name + 4 random digits + 1 letter from Category
         $cleanName = strtoupper(substr(str_replace(' ', '', $request->name), 0, 2));
         $cleanCategory = strtoupper(substr(str_replace(' ', '', $request->category), 0, 1));
 
         do {
             $randomNumbers = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $computedPatientCode = $cleanName . $randomNumbers . $cleanCategory;
-        } while (Patient::where('patient_code', $computedPatientCode)->exists()); // Collision guard loop
+        } while (Patient::where('patient_code', $computedPatientCode)->exists());
 
         $patient = Patient::create([
             'patient_code' => $computedPatientCode,
@@ -48,6 +47,19 @@ class PatientController extends Controller
             'description' => $request->description,
         ]);
 
+        // 🌟 AUTOMATION: Instantly seed fallback visibility settings on account genesis
+        $contactSetting = $patient->contactSetting()->create([
+            'email' => $patient->email,
+            'is_visible' => true
+        ]);
+
+        if ($patient->phone) {
+            $contactSetting->telephones()->create([
+                'telephone_number' => $patient->phone,
+                'is_primary' => true
+            ]);
+        }
+
         return response()->json([
             'message' => 'Patient account initiated successfully.',
             'patient_code' => $patient->patient_code,
@@ -57,7 +69,14 @@ class PatientController extends Controller
 
     public function show($id)
     {
-        $patient = Patient::with(['exercises.attachments', 'documents', 'templates.baseTemplate'])->findOrFail($id);
+        // 🌟 UPDATED: Eager loads nested contact profiles straight to Angular
+        $patient = Patient::with([
+            'exercises.attachments', 
+            'documents', 
+            'templates.baseTemplate', 
+            'contactSetting.telephones'
+        ])->findOrFail($id);
+
         return response()->json($patient, 200);
     }
 
@@ -68,13 +87,23 @@ class PatientController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
+            'patient_password' => 'nullable|string|min:6', // Validate password if provided
         ]);
 
-        // Retain code configuration fields cleanly unless password modifications are explicitly provided
-        $patient->update($request->except(['patient_code', 'patient_password']));
+        // Capture standard modifications while keeping tracking codes immutable
+        $updateData = $request->except(['patient_code', 'patient_password']);
+        
+        $passwordChanged = false;
+        if ($request->filled('patient_password')) {
+            $updateData['patient_password'] = Hash::make($request->patient_password);
+            $passwordChanged = true;
+        }
+
+        $patient->update($updateData);
 
         return response()->json([
-            'message' => 'Patient medical log modified.',
+            'message' => 'Patient medical log modified successfully.',
+            'password_updated' => $passwordChanged,
             'data' => $patient
         ], 200);
     }
@@ -82,7 +111,7 @@ class PatientController extends Controller
     public function destroy($id)
     {
         $patient = Patient::findOrFail($id);
-        $patient->delete(); // Automatically purges related cascading documents/pivot bindings
+        $patient->delete(); 
         return response()->json(['message' => 'Patient history trace eliminated completely.'], 200);
     }
 }

@@ -2,12 +2,12 @@
   
   <header class="dashboard-header-block">
     <div class="header-titles">
-      <h1>Practitioner Medical Workspace</h1>
+      <h3>Patient Details</h3>
       <p class="subtitle">Orthopedic Rehabilitation Clinical Records Interface</p>
     </div>
     <button class="action-btn-primary" (click)="navigateToAddPatient()">
-  <span class="btn-icon">+</span> Initiate Patient File
-</button>
+      <span class="btn-icon">+</span> Initiate Patient File
+    </button>
   </header>
 
   <div class="control-filter-bar">
@@ -142,6 +142,18 @@
           <input type="email" [(ngModel)]="selectedPatient.email" name="edit_email" class="form-field-input" />
         </div>
 
+        <div class="input-form-control">
+          <label>Update Portal Password</label>
+          <input 
+            type="password" 
+            [(ngModel)]="selectedPatient.new_password" 
+            name="edit_password" 
+            placeholder="•••••• (Leave completely blank to keep current configuration)" 
+            class="form-field-input" 
+          />
+          <p class="field-explanatory-note">Provide a minimum of 6 characters if shifting security keys.</p>
+        </div>
+
         <div class="input-form-control danger-zone-alert-box">
           <label class="red-flag-label">🚩 Clinical Red Flags / Restrictions</label>
           <textarea [(ngModel)]="selectedPatient.red_flags" name="edit_red_flags" class="form-field-input-area critical-red-flags"></textarea>
@@ -157,6 +169,39 @@
           <button type="submit" class="action-btn-primary">Save Modifications</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay-backdrop darker-tint" *ngIf="showFeedbackModal">
+    <div class="modal-surface-container feedback-variant-box animated-pop-in">
+      <div class="success-icon-banner">✓</div>
+      <h2>Credentials Modified</h2>
+      <p class="modal-instruction-text">
+        The medical account profile has been saved. Please copy and share these credentials with the patient securely.
+      </p>
+
+      <div class="credentials-card-block">
+        <div class="credential-item-row">
+          <span class="lbl-marker">PATIENT NAME</span>
+          <span class="val-copyable bold-text-emphasis">{{ feedbackData.name }}</span>
+        </div>
+        <div class="credential-item-row">
+          <span class="lbl-marker">TRACKING CODE</span>
+          <span class="val-copyable character-code-highlight">{{ feedbackData.code }}</span>
+        </div>
+        <div class="credential-item-row">
+          <span class="lbl-marker">NEW PASSWORD</span>
+          <span class="val-copyable character-code-highlight">{{ feedbackData.password }}</span>
+        </div>
+      </div>
+
+      <div class="alert-notice-footer-strip">
+        ⚠️ For patient confidentiality, this data cannot be recovered after closing this viewport screen window.
+      </div>
+
+      <button type="button" class="action-btn-primary block-width-full" (click)="copyCredentialsToClipboard()">
+        Copy Message & Close
+      </button>
     </div>
   </div>
 

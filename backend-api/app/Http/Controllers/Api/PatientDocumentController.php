@@ -37,7 +37,8 @@ class PatientDocumentController extends Controller
                 'file_type' => $doc->file_type,
                 'created_at' => $doc->created_at,
                 // Cast directly to ensure standard boolean visibility mapping state
-                'isVisible' => filter_var($doc->is_visible, FILTER_VALIDATE_BOOLEAN)
+                'isVisible' => filter_var($doc->is_visible, FILTER_VALIDATE_BOOLEAN),
+                'signed_status' => $doc->signed_status ?? 'not signed'
             ];
         });
 
@@ -49,10 +50,13 @@ class PatientDocumentController extends Controller
      */
     public function store(Request $request)
     {
+        // 1. Explicitly validate all inbound fields from Angular
         $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'file' => 'required|file|mimes:jpeg,png,jpg,pdf,docx,doc|max:15360', 
-            'category' => 'required',
+            'patient_id'            => 'required|exists:patients,id',
+            'file'                  => 'required|file|mimes:jpeg,png,jpg,pdf,docx,doc|max:15360', 
+            'category'              => 'required|string',
+            'other_category_detail' => 'nullable|string',
+            'signed_status'         => 'nullable|string|in:signed,not signed,no need signed',
         ]);
 
         if ($request->hasFile('file')) {
@@ -65,14 +69,19 @@ class PatientDocumentController extends Controller
             $fileObj->move(public_path('uploads/documents'), $generatedSystemName);
             $storedRelativePath = 'uploads/documents/' . $generatedSystemName;
 
+            // 2. Safe resolution of description keys
+            $descriptionText = $request->get('other_category_detail') ?? $request->get('description');
+
             $document = PatientDocument::create([
-                'patient_id' => $request->patient_id,
-                'file_name' => $originalCleanedName,
-                'file_path' => $storedRelativePath,
-                'file_url' => asset($storedRelativePath), 
-                'file_type' => $ext,
-                'category' => $request->category,
-                'other_category_detail' => $request->description ?? $request->other_category_detail,
+                'patient_id'            => $request->patient_id,
+                'file_name'             => $originalCleanedName,
+                'file_path'             => $storedRelativePath,
+                'file_url'              => asset($storedRelativePath), 
+                'file_type'             => $ext,
+                'category'              => $request->category,
+                'other_category_detail' => $descriptionText,
+                'signed_status'         => $request->get('signed_status', 'not signed'),
+                'is_visible'            => true, // Explicit fallback structure
             ]);
 
             return response()->json([
@@ -82,6 +91,55 @@ class PatientDocumentController extends Controller
         }
 
         return response()->json(['message' => 'Missing diagnostic upload binary.'], 400);
+    }
+
+    /**
+     * Update signed status and replace document file payload if necessary.
+     * PUT /api/patient-documents/{id}/update-status
+     */
+    public function updateStatusAndFile(Request $request, $id)
+    {
+        $request->validate([
+            'signed_status' => 'required|string|in:signed,not signed,no need signed',
+            'file'          => 'nullable|file|mimes:jpeg,png,jpg,pdf,docx,doc|max:15360',
+        ]);
+
+        $document = PatientDocument::findOrFail($id);
+        
+        $updateData = [
+            'signed_status' => $request->signed_status
+        ];
+
+        // Check if an updated document replacement file has been provided
+        if ($request->hasFile('file')) {
+            // Delete historical file binary tracking records safely from local public folder
+            $oldSystemPath = public_path($document->file_path);
+            if (file_exists($oldSystemPath)) {
+                @unlink($oldSystemPath);
+            }
+
+            $fileObj = $request->file('file');
+            $originalCleanedName = $fileObj->getClientOriginalName();
+            $ext = $fileObj->getClientOriginalExtension();
+
+            // We generate a fresh link tracking name to clear out cache parameters
+            $generatedSystemName = time() . '_' . Str::slug(pathinfo($originalCleanedName, PATHINFO_FILENAME)) . '.' . $ext;
+            $fileObj->move(public_path('uploads/documents'), $generatedSystemName);
+            
+            $storedRelativePath = 'uploads/documents/' . $generatedSystemName;
+            
+            $updateData['file_name'] = $originalCleanedName;
+            $updateData['file_path'] = $storedRelativePath;
+            $updateData['file_url']  = asset($storedRelativePath);
+            $updateData['file_type'] = $ext;
+        }
+
+        $document->update($updateData);
+
+        return response()->json([
+            'message' => 'Document signatures parameters updated successfully.',
+            'document' => $document
+        ], 200);
     }
 
     /**

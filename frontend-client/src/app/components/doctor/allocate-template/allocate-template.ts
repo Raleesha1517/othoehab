@@ -33,6 +33,7 @@ export class AllocateTemplate implements OnInit {
   uploadFile: File | null = null;
   uploadName = '';
   uploadDescription = '';
+  uploadSignedStatus = 'not signed'; // Preserved state tracking parameter variable
   isUploading = false;
   isAllocating = false;
 
@@ -105,6 +106,7 @@ export class AllocateTemplate implements OnInit {
     this.uploadFile = null;
     this.uploadName = '';
     this.uploadDescription = '';
+    this.uploadSignedStatus = 'not signed'; // Resets selector context state
     this.cdr.markForCheck();
   }
 
@@ -126,16 +128,28 @@ export class AllocateTemplate implements OnInit {
     if (!this.uploadFile || !this.uploadName.trim() || !this.patientId) return;
 
     this.isUploading = true;
-    this.documentService.uploadDocument(this.patientId, this.uploadFile, 'Template', this.uploadDescription || this.uploadName)
-      .subscribe({
-        next: () => {
-          this.isUploading = false;
-          this.closeTemplateUploadModal();
-          this.loadPatientDocuments();
-          Swal.fire({ icon: 'success', title: 'Document Uploaded', timer: 1500, showConfirmButton: false });
-        },
-        error: () => { this.isUploading = false; this.cdr.markForCheck(); }
-      });
+    this.cdr.markForCheck();
+
+    // Successfully maps all values over to your custom Document Service configuration
+    this.documentService.uploadDocument(
+      this.patientId, 
+      this.uploadFile, 
+      'Template', 
+      this.uploadDescription || this.uploadName, 
+      this.uploadSignedStatus
+    ).subscribe({
+      next: () => {
+        this.isUploading = false;
+        this.closeTemplateUploadModal();
+        this.loadPatientDocuments();
+        Swal.fire({ icon: 'success', title: 'Document Uploaded', timer: 1500, showConfirmButton: false });
+      },
+      error: (err) => { 
+        this.isUploading = false; 
+        console.error(err);
+        this.cdr.markForCheck(); 
+      }
+    });
   }
 
   allocateTemplate(): void {
@@ -164,11 +178,11 @@ export class AllocateTemplate implements OnInit {
       confirmButtonColor: '#ef4444',
       cancelButtonColor: '#64748b',
       confirmButtonText: 'Yes, delete it!'
-    }).then((result) => { // <-- CHANGED FROM .subscribe TO .then
+    }).then((result) => {
       if (result.isConfirmed) {
         this.documentService.deleteDocument(doc.id).subscribe({
           next: () => {
-            this.loadPatientDocuments(); // Instantly update view tracking grid matrix
+            this.loadPatientDocuments(); 
             Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Document removed from patient record.', timer: 1500, showConfirmButton: false });
           },
           error: (err) => {

@@ -7,13 +7,19 @@ use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\PatientDocumentController;
 use App\Http\Controllers\Api\TemplateController;
-use App\Http\Controllers\API\FollowupController;
+use App\Http\Controllers\Api\FollowupController;
+use App\Http\Controllers\Api\PatientContactController;
+use App\Http\Controllers\Api\PatientRequestController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/users', [AuthController::class, 'index']);
+
+    Route::put('/user/update', [AuthController::class, 'updateProfile']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Core Isolated Patient CRUD Map
@@ -44,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Patient Documents Management System Subsystem Routes
     Route::get('patient-documents/categories', [PatientDocumentController::class, 'categories']);
     Route::get('patient-documents/{id}/download', [PatientDocumentController::class, 'download']);
+    Route::put('patient-documents/{id}/update-status', [PatientDocumentController::class, 'updateStatusAndFile']);
     Route::get('patients/{patientId}/documents', [PatientDocumentController::class, 'getPatientDocuments']);
     
     // Explicit visibility modifier placed above resource map to intercept route lookup properly
@@ -55,4 +62,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('followups', [FollowupController::class, 'store']);
     Route::put('followups/{id}', [FollowupController::class, 'update']);
     Route::delete('followups/{id}', [FollowupController::class, 'destroy']);
+
+    // Patient Request Subsystem Management Routes
+    Route::get('patient-requests', [PatientRequestController::class, 'index']); // Doctor View All
+    Route::get('patients/{patientId}/requests', [PatientRequestController::class, 'getPatientRequests']); // Patient specific list
+    Route::post('patient-requests', [PatientRequestController::class, 'store']); // Patient submit 
+    Route::put('patient-requests/{id}/status', [PatientRequestController::class, 'updateStatus']); // Doctor update action
+    Route::delete('patient-requests/{id}', [PatientRequestController::class, 'destroy']); // Deletion pipeline
+
+    Route::get('/patients/{patientId}/contact-settings', [PatientContactController::class, 'show']);
+    Route::post('/patients/{patientId}/contact-settings', [PatientContactController::class, 'updateOrCreateContact']);
+    Route::patch('/patients/{patientId}/contact-settings/visibility', [PatientContactController::class, 'toggleVisibility']);
 });

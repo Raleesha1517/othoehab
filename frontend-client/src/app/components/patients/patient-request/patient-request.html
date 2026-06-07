@@ -1,0 +1,84 @@
+<div class="requests-workspace-container">
+  
+  <div class="lang-switcher-row">
+    <button type="button" class="btn-lang" [class.active-lang]="currentLang === 'en'" (click)="setLanguage('en')">English</button>
+    <button type="button" class="btn-lang" [class.active-lang]="currentLang === 'si'" (click)="setLanguage('si')">සිංහල</button>
+    <button type="button" class="btn-lang" [class.active-lang]="currentLang === 'ta'" (click)="setLanguage('ta')">தமிழ்</button>
+  </div>
+
+  <header class="workspace-header-node">
+    <h1>{{ translations['panelTitle'][currentLang] }}</h1>
+    <p class="subtitle">{{ translations['panelSubtitle'][currentLang] }}</p>
+  </header>
+
+  <div class="workspace-grid-layout">
+    <section class="request-card-section form-card">
+      <h2>{{ translations['cardNewRequest'][currentLang] }}</h2>
+      <form [formGroup]="requestForm" (ngSubmit)="onSubmitRequest()">
+        
+        <div class="form-input-block">
+          <label class="field-label-text">{{ translations['labelCategory'][currentLang] }}</label>
+          <select formControlName="title" class="form-select-node">
+            <option value="" disabled selected>{{ translations['selectPlaceholder'][currentLang] }}</option>
+            <option *ngFor="let cat of categories" [value]="cat.value">
+              {{ cat[currentLang] }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-input-block conditional-field-anim" *ngIf="requestForm.get('title')?.value === 'Other'">
+          <label class="field-label-text label-highlight">{{ translations['labelOtherCategory'][currentLang] }}</label>
+          <input type="text" formControlName="otherTitle" class="form-input-node" [placeholder]="translations['placeholderOtherCategory'][currentLang]" />
+        </div>
+
+        <div class="form-input-block">
+          <label class="field-label-text">{{ translations['labelDescription'][currentLang] }}</label>
+          <textarea formControlName="description" class="form-textarea-node" [placeholder]="translations['placeholderTextarea'][currentLang]"></textarea>
+        </div>
+
+        <button type="submit" class="btn-ui-commit" [disabled]="requestForm.invalid">
+          {{ translations['btnSubmit'][currentLang] }}
+        </button>
+      </form>
+    </section>
+
+    <section class="request-card-section history-card">
+      <h2>{{ translations['cardHistory'][currentLang] }}</h2>
+      
+      <div *ngIf="isLoading" class="inner-loader">
+        <p>{{ translations['loadingText'][currentLang] }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && myRequests.length === 0" class="empty-state-node">
+        <p>{{ translations['emptyState'][currentLang] }}</p>
+      </div>
+
+      <div class="table-container-node" *ngIf="!isLoading && myRequests.length > 0">
+        <table class="workspace-billing-table">
+          <thead>
+            <tr>
+              <th>{{ translations['thCategory'][currentLang] }}</th>
+              <th>{{ translations['thDescription'][currentLang] }}</th>
+              <th>{{ translations['thStatus'][currentLang] }}</th>
+              <th>{{ translations['thReply'][currentLang] }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let req of myRequests">
+              <td><strong class="category-text-badge">{{ req.title }}</strong></td>
+              <td class="desc-cell">{{ req.description }}</td>
+              <td>
+                <span class="status-tag" [ngClass]="getStatusBadgeClass(req.status)">
+                  {{ getTranslatedStatus(req.status) }}
+                </span>
+              </td>
+              <td class="reply-cell" [class.no-reply]="!req.reply">
+                {{ req.reply || translations['awaitingReply'][currentLang] }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

@@ -132,4 +132,21 @@ export class Auth {
 
     return { headers: new HttpHeaders(headers) };
   }
+
+  // Add this inside your existing Auth service class file
+getDoctors(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/users`, this.getAuthHeaders()).pipe(
+    map((users: any) => {
+      return Array.isArray(users) 
+        ? users.filter(u => u.role && u.role.toString().toLowerCase() === 'doctor') 
+        : [];
+    }),
+    catchError(() => of([]))
+  );
+}
+
+// Add this update profile method to save edited doctor details
+updateProfile(profileData: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/user/update`, profileData, this.getAuthHeaders());
+}
 }

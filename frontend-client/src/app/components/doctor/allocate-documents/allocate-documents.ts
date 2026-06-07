@@ -23,9 +23,9 @@ export class AllocateDocuments implements OnInit {
   documentFile: File | null = null;
   documentCategory = '';
   documentDescription = '';
+  documentSignedStatus = 'not signed'; // Track verification values
   isUploadingDocument = false;
 
-  // Categories list excluding 'Template' which handles template configurations
   documentCategories = [
     'Medical Report',
     'Assessment Form',
@@ -91,6 +91,7 @@ export class AllocateDocuments implements OnInit {
     this.documentFile = null;
     this.documentCategory = '';
     this.documentDescription = '';
+    this.documentSignedStatus = 'not signed'; // Resets structural state values cleanly
     this.cdr.markForCheck();
   }
 
@@ -112,11 +113,13 @@ export class AllocateDocuments implements OnInit {
     this.isUploadingDocument = true;
     this.cdr.markForCheck();
 
+    // Appended signature status variable payload argument to your service
     this.documentService.uploadDocument(
       this.patientId,
       this.documentFile,
       this.documentCategory,
-      this.documentDescription
+      this.documentDescription,
+      this.documentSignedStatus
     ).subscribe({
       next: () => {
         this.isUploadingDocument = false;
@@ -147,7 +150,7 @@ export class AllocateDocuments implements OnInit {
       if (result.isConfirmed) {
         this.documentService.deleteDocument(doc.id).subscribe({
           next: () => {
-            this.loadPatientDocuments(); // Refreshes list automatically
+            this.loadPatientDocuments();
             Swal.fire({ icon: 'success', title: 'Removed!', text: 'Medical record deleted successfully.', timer: 1500, showConfirmButton: false });
           },
           error: (err) => {
